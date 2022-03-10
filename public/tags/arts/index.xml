@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>arts on 萝卜的博客</title>
+    <link>https://hxzhouh.github.io/tags/arts/</link>
+    <description>Recent content in arts on 萝卜的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 21 Sep 2020 09:19:00 +0000</lastBuildDate><atom:link href="https://hxzhouh.github.io/tags/arts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ARTS 0914-0920</title>
+      <link>https://hxzhouh.github.io/post/arts-0914-0920/</link>
+      <pubDate>Mon, 21 Sep 2020 09:19:00 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/post/arts-0914-0920/</guid>
+      <description>RTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇</description>
+    </item>
+    
+    <item>
+      <title>ARTS 0907-0913</title>
+      <link>https://hxzhouh.github.io/post/arts-0907-0913/</link>
+      <pubDate>Sun, 13 Sep 2020 19:19:00 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/post/arts-0907-0913/</guid>
+      <description>ARTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇</description>
+    </item>
+    
+  </channel>
+</rss>

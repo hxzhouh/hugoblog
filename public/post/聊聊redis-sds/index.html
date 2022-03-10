@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>聊聊Redis SDS - 萝卜的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="hxzhouh" /><meta name="description" content="SDS全拼为：simple dynamic string，解释为：简单动态字符串
+​ C语言字符串使用长度为n&#43;1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&amp;rsquo;\0&amp;rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。
+" /><meta name="keywords" content="Go, 分布式, 数据库" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.94.0-DEV with theme even" />
+
+
+<link rel="canonical" href="https://hxzhouh.github.io/post/%E8%81%8A%E8%81%8Aredis-sds/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.651e6917abb0239242daa570c2bec9867267bbcd83646da5a850afe573347b44.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="聊聊Redis SDS" />
+<meta property="og:description" content="SDS全拼为：simple dynamic string，解释为：简单动态字符串
+​    C语言字符串使用长度为n&#43;1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&rsquo;\0&rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://hxzhouh.github.io/post/%E8%81%8A%E8%81%8Aredis-sds/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2019-11-16T23:39:28+00:00" />
+<meta property="article:modified_time" content="2019-11-16T23:39:28+00:00" />
+
+<meta itemprop="name" content="聊聊Redis SDS">
+<meta itemprop="description" content="SDS全拼为：simple dynamic string，解释为：简单动态字符串
+​    C语言字符串使用长度为n&#43;1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&rsquo;\0&rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。"><meta itemprop="datePublished" content="2019-11-16T23:39:28+00:00" />
+<meta itemprop="dateModified" content="2019-11-16T23:39:28+00:00" />
+<meta itemprop="wordCount" content="2755">
+<meta itemprop="keywords" content="redis," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="聊聊Redis SDS"/>
+<meta name="twitter:description" content="SDS全拼为：simple dynamic string，解释为：简单动态字符串
+​    C语言字符串使用长度为n&#43;1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&rsquo;\0&rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">萝卜</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">目录</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/categories/arts/">
+        <li class="mobile-menu-item">ARTS</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">萝卜</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">目录</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/arts/">ARTS</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">聊聊Redis SDS</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-11-16 </span>
+        <div class="post-category">
+            <a href="/categories/redis/"> redis </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#sds定义">SDS定义</a></li>
+    <li><a href="#为什么使用sds"><strong>为什么使用SDS</strong></a>
+      <ul>
+        <li><a href="#1-相比c语言字符串使获取字符串长度时间复杂度降为o1"><strong>1. 相比C语言字符串，使获取字符串长度时间复杂度降为O(1)</strong></a></li>
+        <li><a href="#2-杜绝缓冲区溢出"><strong>2. 杜绝缓冲区溢出</strong></a></li>
+        <li><a href="#3-减少修改字符串时带来的内存重分配次数"><strong>3. 减少修改字符串时带来的内存重分配次数</strong></a>
+          <ul>
+            <li><a href="#31-空间预分配"><strong>3.1 空间预分配</strong></a></li>
+            <li><a href="#32-惰性空间释放"><strong>3.2 惰性空间释放</strong></a></li>
+            <li><a href="#33-二进制安全">3.3 二进制安全</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+  <div class="post-outdated">
+    <div class="warn">
+      <p>【注意】最后更新于 <span class="timeago" datetime="2019-11-16T23:39:28" title="November 16, 2019">November 16, 2019</span>，文中内容可能已过时，请谨慎使用。</p>
+    </div>
+  </div>
+    <div class="post-content">
+      <p>SDS全拼为：<code>simple dynamic string</code>，解释为：简单动态字符串</p>
+<p>​    C语言字符串使用长度为n+1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&rsquo;\0&rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。</p>
+<h1 id="sds定义">SDS定义</h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">struct sdshdr{
+</span></span><span class="line"><span class="cl">     //字节数组
+</span></span><span class="line"><span class="cl">     char buf[]; 
+</span></span><span class="line"><span class="cl">     //buf数组中已使用字节数量
+</span></span><span class="line"><span class="cl">     int len;
+</span></span><span class="line"><span class="cl">     //buf数组中未使用字节数量
+</span></span><span class="line"><span class="cl">     int free;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="../../../%E6%88%91%E7%9A%84%E5%9D%9A%E6%9E%9C%E4%BA%91/Typro%20%E6%96%87%E6%A1%A3%E5%BA%93/%E5%9B%BE%E7%89%87/20200313213825.png" alt=""></p>
+<p>​    上图展示了一个SDS实例，len表示该SDS保存了一个5字节长度（不包含结束符）的字符串，free表示该SDS还有5个字节的未使用空间，buf是一个char类型的数组，保存了该SDS所存储的字符串值</p>
+<h1 id="为什么使用sds"><strong>为什么使用SDS</strong></h1>
+<h2 id="1-相比c语言字符串使获取字符串长度时间复杂度降为o1"><strong>1. 相比C语言字符串，使获取字符串长度时间复杂度降为O(1)</strong></h2>
+<p>​    C语言字符串不记录自身长度，如果想获取自身长度必须遍历整个字符串，对每个字符进行计数，这个操作时间复杂度是O(n)。相比较而言，Redis程序只要访问SDS的len属性就可以直接获取到字符串长度，时间复杂度为O(1)，确保获取字符串长度不会成为Redis性能瓶颈，比如对字符串键反复执行strlen命令。如：获取“Redis”字符串长度时程序会直接访问len属性即可，该字符串长度为5。</p>
+<h2 id="2-杜绝缓冲区溢出"><strong>2. 杜绝缓冲区溢出</strong></h2>
+<p>​    假设程序里有两个在内存中紧邻的字符串s1和s2，s1的值为Redis，底层数组的值为[&lsquo;R&rsquo;,&rsquo;e&rsquo;,&rsquo;d&rsquo;,&lsquo;i&rsquo;,&rsquo;s&rsquo;,&rsquo;\0&rsquo;]，s2的值为Memcache，底层数组的值为[&lsquo;M&rsquo;,&rsquo;e&rsquo;,&rsquo;m&rsquo;,&lsquo;c&rsquo;,&lsquo;a&rsquo;,&lsquo;c&rsquo;,&lsquo;h&rsquo;,&rsquo;e&rsquo;,&rsquo;\0&rsquo;]，在C语言中如果要执行strcat(s1, &quot; cluster&quot;)把s1修改为Redis cluster，如果忘记在执行strcat命令之前为s1重新分配空间，那么在执行完strcat命令之后，s1底层数组的值变为[&lsquo;R&rsquo;,&rsquo;e&rsquo;,&rsquo;d&rsquo;,&lsquo;i&rsquo;,&rsquo;s&rsquo;,&rsquo; &lsquo;,&lsquo;c&rsquo;,&rsquo;l&rsquo;,&lsquo;u&rsquo;,&rsquo;s&rsquo;,&rsquo;t&rsquo;,&rsquo;e&rsquo;,&lsquo;r&rsquo;,&rsquo;\0&rsquo;]，s2底层数组的值变为[&lsquo;c&rsquo;,&rsquo;l&rsquo;,&lsquo;u&rsquo;,&rsquo;s&rsquo;,&rsquo;t&rsquo;,&rsquo;e&rsquo;,&lsquo;r&rsquo;,&rsquo;\0&rsquo;,&rsquo;\0&rsquo;]，s1的数据溢出到s2所在的内存空间，s2的值被意外修改。与C语言不同，当SDS API需要对SDS进行修改时，API会先检查SDS当前剩余空间是否满足修改之后所需的空间，如果不满足的话API会自动将SDS的空间扩展至修改之后所需空间大小，然后再执行实际的修改操作，所以SDS不会出现缓冲区溢出问题。（缓冲区扩充并非是直接扩充到所需要的空间大小，它和SDS空间分配策略有关，参见下一小节）</p>
+<h2 id="3-减少修改字符串时带来的内存重分配次数"><strong>3. 减少修改字符串时带来的内存重分配次数</strong></h2>
+<p>​    C语言字符串底层是使用一个n+1个字符长度的char类型数据实现的，所以每次增长或缩短一个C语言字符串，程序都要对这个字符串数组进行一次内存重分配操作：</p>
+<ol>
+<li>如果程序执行的是增长字符串操作，比如strcat操作，在执行这个操作之前需要通过内存重分配扩展底层数组，如果忘记了则会造成缓冲区溢出。</li>
+<li>如果程序执行的是缩短字符串操作，比如trim操作，在执行这个操作之前需要通过内存重分配释放字符串不再使用的内存空间，如果忘记了则会造成内存泄漏。</li>
+</ol>
+<p>​            因为内存重分配涉及复杂的算法，并且可能需要执行系统调用，所以它通常是一个比较耗时的操作。Redis经常被用于速度要求严苛、数据被频繁修改的场合，如果每次修改字符串都需要执行一次内存重分配的话，那么对于性能会造成很大影响。</p>
+<p>​            在SDS中通过未使用空间解除了字符串长度和底层数组长度之间的关联，在SDS中，buf数组长度不一定是字符串长度加1，数组中可能包含未使用的字节，这些字节的数量就是由SDS的free属性记录。通过未使用空间，SDS实现了空间预分配和惰性空间释放两种优化策略。</p>
+<h3 id="31-空间预分配"><strong>3.1 空间预分配</strong></h3>
+<p>​    用于字符串增长操作，当字符串增长时，程序会先检查需不需要对SDS空间进行扩展，如果需要扩展，程序不仅会为SDS分配修改所必要的空间，还会为SDS分配额外的未使用空间，额外分配的未使用空间公式如下：</p>
+<ol>
+<li>如果对SDS修改之后，SDS的长度（修改之后len属性的值）小于1MB，那么则分配和len属性同样大小的未使用空间，这时SDS的len属性和free属性的值相同。如：如果修改之后SDS的len将变为10字节，那么程序也会分配10字节的未使用空间，SDS的buf数组实际长度变为10 + 10 + 1 = 21（额外一个字节用于保存结束符\n）</li>
+<li>如果对SDS修改之后，SDS的长度大于等于1MB，那么程序会分配1MB的未使用空间。如：修改之后的len将变为10MB，那么程序会分配1MB的未使用空间，SDS的bug数组长度为10MB + 1MB + 1byte</li>
+</ol>
+<h3 id="32-惰性空间释放"><strong>3.2 惰性空间释放</strong></h3>
+<p>​    用于优化SDS的字符串收缩操作，当字符串收缩时，程序不会立即执行内存重分配来回收收缩后内存多出来的空间，而是使用free属性记录下来，以备将来使用。</p>
+<p><img src="../../../%E6%88%91%E7%9A%84%E5%9D%9A%E6%9E%9C%E4%BA%91/Typro%20%E6%96%87%E6%A1%A3%E5%BA%93/%E5%9B%BE%E7%89%87/20200313213934.png" alt=""></p>
+<p><img src="../../../%E6%88%91%E7%9A%84%E5%9D%9A%E6%9E%9C%E4%BA%91/Typro%20%E6%96%87%E6%A1%A3%E5%BA%93/%E5%9B%BE%E7%89%87/20200313213920.png" alt=""></p>
+<p>​    通过空间预分配，Redis可以减少连续执行字符串增长操作所需的内存重分配次数，通过惰性空间释放，SDS避免了缩短字符串时所需的内存重分配操作，并为将来由可能的增长操作提供了优化。</p>
+<h3 id="33-二进制安全">3.3 二进制安全</h3>
+<p>C语言的字符串不能使用\0结尾，导致C语言字符串不能保存 图片等二进制数据。</p>
+<p>redis 使用字符数组来保存字符串，不会对数据做任何限制、过滤、假设，使得redis兼容性更强。</p>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">hxzhouh</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-11-16
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/redis/">redis</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/%E8%81%8A%E8%81%8Aredis-%E9%93%BE%E8%A1%A8/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">聊聊redis的链表</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hxzhouh@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/hxzhouh" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/zchlwj/" class="iconfont icon-douban" title="douban"></a>
+  <a href="https://hxzhouh.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2020 - 
+    2022
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">hxzhouh</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js" integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js" integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin="anonymous"></script>
+  <script><!-- NOTE: timeago.js uses the language code format like "zh_CN" (underscore and case sensitive) -->
+    var languageCode = "en".replace(/-/g, '_').replace(/_(.*)/, function ($0, $1) {return $0.replace($1, $1.toUpperCase());});
+    timeago().render(document.querySelectorAll('.timeago'), languageCode);
+    timeago.cancel();  
+  </script>
+
+
+
+<script type="text/javascript" src="/js/main.min.30dad356188cdaba5047112eaa8bf5e85cb14ae7e803337403591fce94a531a0.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

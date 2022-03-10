@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>最佳实践 on 萝卜的博客</title>
+    <link>https://hxzhouh.github.io/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</link>
+    <description>Recent content in 最佳实践 on 萝卜的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 03 Apr 2020 11:55:43 +0000</lastBuildDate><atom:link href="https://hxzhouh.github.io/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>go pprof 最佳实践</title>
+      <link>https://hxzhouh.github.io/post/golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-pprof/</link>
+      <pubDate>Fri, 03 Apr 2020 11:55:43 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/post/golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-pprof/</guid>
+      <description>前言 写了几吨代码，实现了几百个接口。功能测试也通过了，终于成功的部署上线了 结果，性能不佳，什么鬼？😭 想做性能分析 PProf 想要进行性能优化，首先瞩目</description>
+    </item>
+    
+    <item>
+      <title>Golang 通过 Consul 实现分布式锁</title>
+      <link>https://hxzhouh.github.io/post/golang-%E9%80%9A%E8%BF%87-consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</link>
+      <pubDate>Tue, 24 Mar 2020 11:55:43 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/post/golang-%E9%80%9A%E8%BF%87-consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</guid>
+      <description>Consul 是什么 Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查,</description>
+    </item>
+    
+    <item>
+      <title>go trace view trace 显示空白</title>
+      <link>https://hxzhouh.github.io/post/go-trace-view-trace-%E6%98%BE%E7%A4%BA%E7%A9%BA%E7%99%BD/</link>
+      <pubDate>Sat, 21 Mar 2020 11:55:43 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/post/go-trace-view-trace-%E6%98%BE%E7%A4%BA%E7%A9%BA%E7%99%BD/</guid>
+      <description>go trace 用来跟踪 goroutines运行情况,跟pprof配合使用，可以起到事半功倍的效果。但是，go trace 的view trace 在chrome下一片空白。 原</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>深度优先算法与广度优先算法 - 萝卜的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="hxzhouh" /><meta name="description" content="深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深" /><meta name="keywords" content="Go, 分布式, 数据库" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.94.0-DEV with theme even" />
+
+
+<link rel="canonical" href="https://hxzhouh.github.io/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.651e6917abb0239242daa570c2bec9867267bbcd83646da5a850afe573347b44.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="深度优先算法与广度优先算法" />
+<meta property="og:description" content="深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://hxzhouh.github.io/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2020-04-06T23:15:50+00:00" />
+<meta property="article:modified_time" content="2020-04-06T23:15:50+00:00" />
+
+<meta itemprop="name" content="深度优先算法与广度优先算法">
+<meta itemprop="description" content="深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深"><meta itemprop="datePublished" content="2020-04-06T23:15:50+00:00" />
+<meta itemprop="dateModified" content="2020-04-06T23:15:50+00:00" />
+<meta itemprop="wordCount" content="2507">
+<meta itemprop="keywords" content="DFS,BFS," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="深度优先算法与广度优先算法"/>
+<meta name="twitter:description" content="深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">萝卜</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">目录</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/categories/arts/">
+        <li class="mobile-menu-item">ARTS</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">萝卜</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">目录</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/arts/">ARTS</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">深度优先算法与广度优先算法</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-04-06 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/"> 数据结构&amp;算法 </a>
+            <a href="/categories/leetcode/"> leetCode </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#深度优先算法-depth-first-search">深度优先算法 （Depth-First-Search）</a></li>
+    <li><a href="#广度优先搜索算法breadth-first-search">广度优先搜索算法（Breadth-First-Search）</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#leetcode-真题">leetcode 真题</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+  <div class="post-outdated">
+    <div class="warn">
+      <p>【注意】最后更新于 <span class="timeago" datetime="2020-04-06T23:15:50" title="April 6, 2020">April 6, 2020</span>，文中内容可能已过时，请谨慎使用。</p>
+    </div>
+  </div>
+    <div class="post-content">
+      <h1 id="深度优先算法-depth-first-search">深度优先算法 （Depth-First-Search）</h1>
+<p>深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深度遍历树的节点，尽可能深的搜索树的分 支。
+当节点v的所有边都己被探寻过，搜索将回溯到发现节点v的那条边的起始节点。
+这一过程一直进行到已发现从源节点可达的所有节点为止。
+如果还存在未被发 现的节点，则选择其中一个作为源节点并重复以上过程，整个进程反复进行直到所有节点都被访问为止。</p>
+<p>深度优先搜索是图论中的经典算法，利用深度优先搜索算法可以产生目标图的相应拓扑排序表，利用拓扑排序表可以方便的解决很多相关的图论问题，如最大路径问题等等。一般用堆数据结构来辅助实现DFS算法。</p>
+<p><strong>DFS属于盲目搜索</strong></p>
+<p>深度优先遍历图算法步骤：</p>
+<ul>
+<li>访问顶点v；</li>
+<li>依次从v的未被访问的邻接点出发，对图进行深度优先遍历；直至图中和v有路径相通的顶点都被访问；</li>
+<li>若此时图中尚有顶点未被访问，则从一个未被访问的顶点出发，重新进行深度优先遍历，直到图中所有顶点均被访问过为止。</li>
+</ul>
+<p><strong>举个实例：</strong></p>
+<p>DFS 在访问图中某一起始顶点 v 后，由 v 出发，访问它的任一邻接顶点 w1；再从 w1 出发，访问与 w1邻 接但还没有访问过的顶点 w2；然后再从 w2 出发，进行类似的访问，… 如此进行下去，直至到达所有的邻接顶点都被访问过的顶点 u 为止。
+接着，退回一步，退到前一次刚访问过的顶点，看是否还有其它没有被访问的邻接顶点。如果有，则访问此顶点，之后再从此顶点出发，进行与前述类似的访问；如果没有，就再退回一步进行搜索。重复上述过程，直到连通图中所有顶点都被访问过为止。</p>
+<p>例如下图，其深度优先遍历顺序为 1-&gt;2-&gt;4-&gt;8-&gt;5-&gt;3-&gt;6-&gt;7</p>
+<p><img src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200406213809.png" alt="深度优先算法"></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">dfs</span><span class="p">(</span><span class="nx">root</span> <span class="o">*</span><span class="nx">TreeNode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">root</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="nx">root</span><span class="p">.</span><span class="nx">Val</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">dfs</span><span class="p">(</span><span class="nx">root</span><span class="p">.</span><span class="nx">Left</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">dfs</span><span class="p">(</span><span class="nx">root</span><span class="p">.</span><span class="nx">Right</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="广度优先搜索算法breadth-first-search">广度优先搜索算法（Breadth-First-Search）</h1>
+<p><strong>广度优先搜索算法（Breadth-First-Search），是一种图形搜索算法</strong></p>
+<p>简单的说，BFS是从根节点开始，沿着树(图)的宽度遍历树(图)的节点。如果所有节点均被访问，则算法中止。
+BFS同样属于盲目搜索。一般用队列数据结构来辅助实现BFS算法。</p>
+<p>算法步骤：</p>
+<ol>
+<li>首先将根节点放入队列中。</li>
+<li>从队列中取出第一个节点，并检验它是否为目标。如果找到目标，则结束搜寻并回传结果。否则将它所有尚未检验过的直接子节点加入队列中。</li>
+<li>若队列为空，表示整张图都检查过了——亦即图中没有欲搜寻的目标。结束搜寻并回传“找不到目标”。</li>
+<li>重复步骤2。</li>
+</ol>
+<p>如上图，其广度优先算法的遍历顺序为：1-&gt;2-&gt;3-&gt;4-&gt;5-&gt;6-&gt;7-&gt;8</p>
+<p>代码实现</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">//// 节点，用于记录位置
+</span></span></span><span class="line"><span class="cl"><span class="c1">//type AnnotatedNode struct {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	node *TreeNode
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	dept,
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	ops int
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//type linkNode struct {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	value *AnnotatedNode
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	next  *linkNode
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//// 链表
+</span></span></span><span class="line"><span class="cl"><span class="c1">//type linkedAnnotatedNodeList struct {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	head  *linkNode //队首
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	tail  *linkNode //队尾
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	count int       //长度
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//// 初始化链表
+</span></span></span><span class="line"><span class="cl"><span class="c1">//func NewLinkedAnnotatedNodeList() *linkedAnnotatedNodeList {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	return &amp;linkedAnnotatedNodeList{head: nil, tail: nil, count: 0}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//func (this *linkedAnnotatedNodeList) IsEmpty() bool {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	return this.count == 0
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//func (this *linkedAnnotatedNodeList) Add(value *AnnotatedNode) {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	node := new(linkNode)
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	node.value = value
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	this.count++
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	if this.tail == nil {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//		this.head = node
+</span></span></span><span class="line"><span class="cl"><span class="c1">//		this.tail = node
+</span></span></span><span class="line"><span class="cl"><span class="c1">//		node.next = nil
+</span></span></span><span class="line"><span class="cl"><span class="c1">//		return
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	this.tail.next = node
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	node.next = nil
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	this.tail = node
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//func (this *linkedAnnotatedNodeList) Delete() *linkNode {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	if this.head == nil {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//		return nil
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	this.count--
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	if this.head == this.tail {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//		node := this.head
+</span></span></span><span class="line"><span class="cl"><span class="c1">//		this.head = nil
+</span></span></span><span class="line"><span class="cl"><span class="c1">//		this.tail = nil
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//		return node
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	node := this.head
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	this.head = this.head.next
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	return node
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//type Queue struct {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	link *linkedAnnotatedNodeList
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//func NewQueue() *Queue {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	return &amp;Queue{link: NewLinkedAnnotatedNodeList()}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">////加入队列
+</span></span></span><span class="line"><span class="cl"><span class="c1">//func (this *Queue) Put(value *AnnotatedNode) {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	this.link.Add(value)
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">////pop出队列
+</span></span></span><span class="line"><span class="cl"><span class="c1">//func (this *Queue) Pop() *linkNode {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	return this.link.Delete()
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">////获得队列的长度
+</span></span></span><span class="line"><span class="cl"><span class="c1">//func (this *Queue) GetSize() int {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	return this.link.count
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//func (this *Queue) IsEmpty() bool {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//	return this.GetSize() == 0
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">bfs</span><span class="p">(</span><span class="nx">root</span> <span class="o">*</span><span class="nx">TreeNode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">query</span> <span class="o">:=</span> <span class="nf">NewQueue</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">query</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">AnnotatedNode</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">node</span><span class="p">:</span> <span class="nx">root</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">query</span><span class="p">.</span><span class="nf">GetSize</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">a</span> <span class="o">:=</span> <span class="nx">query</span><span class="p">.</span><span class="nf">Pop</span><span class="p">().</span><span class="nx">value</span> <span class="c1">// 获取节点
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">node</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">Val</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">query</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">AnnotatedNode</span><span class="p">{</span><span class="nx">node</span><span class="p">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">Left</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">query</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">AnnotatedNode</span><span class="p">{</span><span class="nx">node</span><span class="p">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">Right</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="leetcode-真题">leetcode 真题</h3>
+<h4 id="662-二叉树最大宽度httpsleetcode-cncomproblemsmaximum-width-of-binary-tree"><a href="https://leetcode-cn.com/problems/maximum-width-of-binary-tree/">662. 二叉树最大宽度</a></h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">AnnotatedNode</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">node</span> <span class="o">*</span><span class="nx">TreeNode</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">dept</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ops</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">linkNode</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">value</span> <span class="o">*</span><span class="nx">AnnotatedNode</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">next</span>  <span class="o">*</span><span class="nx">linkNode</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 链表
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">linkedAnnotatedNodeList</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">head</span>  <span class="o">*</span><span class="nx">linkNode</span> <span class="c1">//队首
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">tail</span>  <span class="o">*</span><span class="nx">linkNode</span> <span class="c1">//队尾
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">count</span> <span class="kt">int</span>       <span class="c1">//长度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 初始化链表
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">NewLinkedAnnotatedNodeList</span><span class="p">()</span> <span class="o">*</span><span class="nx">linkedAnnotatedNodeList</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">linkedAnnotatedNodeList</span><span class="p">{</span><span class="nx">head</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">tail</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">count</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">linkedAnnotatedNodeList</span><span class="p">)</span> <span class="nf">IsEmpty</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">this</span><span class="p">.</span><span class="nx">count</span> <span class="o">==</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">linkedAnnotatedNodeList</span><span class="p">)</span> <span class="nf">Add</span><span class="p">(</span><span class="nx">value</span> <span class="o">*</span><span class="nx">AnnotatedNode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">node</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">linkNode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">node</span><span class="p">.</span><span class="nx">value</span> <span class="p">=</span> <span class="nx">value</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">count</span><span class="o">++</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">this</span><span class="p">.</span><span class="nx">tail</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">this</span><span class="p">.</span><span class="nx">head</span> <span class="p">=</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">this</span><span class="p">.</span><span class="nx">tail</span> <span class="p">=</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">node</span><span class="p">.</span><span class="nx">next</span> <span class="p">=</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">tail</span><span class="p">.</span><span class="nx">next</span> <span class="p">=</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">node</span><span class="p">.</span><span class="nx">next</span> <span class="p">=</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">tail</span> <span class="p">=</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">linkedAnnotatedNodeList</span><span class="p">)</span> <span class="nf">Delete</span><span class="p">()</span> <span class="o">*</span><span class="nx">linkNode</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">this</span><span class="p">.</span><span class="nx">head</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">count</span><span class="o">--</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">this</span><span class="p">.</span><span class="nx">head</span> <span class="o">==</span> <span class="nx">this</span><span class="p">.</span><span class="nx">tail</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">node</span> <span class="o">:=</span> <span class="nx">this</span><span class="p">.</span><span class="nx">head</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">this</span><span class="p">.</span><span class="nx">head</span> <span class="p">=</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">this</span><span class="p">.</span><span class="nx">tail</span> <span class="p">=</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">node</span> <span class="o">:=</span> <span class="nx">this</span><span class="p">.</span><span class="nx">head</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">head</span> <span class="p">=</span> <span class="nx">this</span><span class="p">.</span><span class="nx">head</span><span class="p">.</span><span class="nx">next</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Queue</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">link</span> <span class="o">*</span><span class="nx">linkedAnnotatedNodeList</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewQueue</span><span class="p">()</span> <span class="o">*</span><span class="nx">Queue</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">Queue</span><span class="p">{</span><span class="nx">link</span><span class="p">:</span> <span class="nf">NewLinkedAnnotatedNodeList</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//加入队列
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">Queue</span><span class="p">)</span> <span class="nf">Put</span><span class="p">(</span><span class="nx">value</span> <span class="o">*</span><span class="nx">AnnotatedNode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">link</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//pop出队列
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">Queue</span><span class="p">)</span> <span class="nf">Pop</span><span class="p">()</span> <span class="o">*</span><span class="nx">linkNode</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">this</span><span class="p">.</span><span class="nx">link</span><span class="p">.</span><span class="nf">Delete</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//获得队列的长度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">Queue</span><span class="p">)</span> <span class="nf">GetSize</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">this</span><span class="p">.</span><span class="nx">link</span><span class="p">.</span><span class="nx">count</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">Queue</span><span class="p">)</span> <span class="nf">IsEmpty</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">this</span><span class="p">.</span><span class="nf">GetSize</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">widthOfBinaryTree</span><span class="p">(</span><span class="nx">root</span> <span class="o">*</span><span class="nx">TreeNode</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">query</span> <span class="o">:=</span> <span class="nf">NewQueue</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">query</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">AnnotatedNode</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">node</span><span class="p">:</span> <span class="nx">root</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">dept</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ops</span><span class="p">:</span>  <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">})</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">curDepth</span> <span class="o">:=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">left</span> <span class="o">:=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ans</span> <span class="o">:=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">query</span><span class="p">.</span><span class="nf">GetSize</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">a</span> <span class="o">:=</span> <span class="nx">query</span><span class="p">.</span><span class="nf">Pop</span><span class="p">().</span><span class="nx">value</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">node</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">query</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">AnnotatedNode</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">node</span><span class="p">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">Left</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">dept</span><span class="p">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">dept</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">ops</span><span class="p">:</span>  <span class="nx">a</span><span class="p">.</span><span class="nx">ops</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">})</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">query</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">AnnotatedNode</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">node</span><span class="p">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">Right</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">dept</span><span class="p">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">dept</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">ops</span><span class="p">:</span>  <span class="nx">a</span><span class="p">.</span><span class="nx">ops</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">})</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nx">curDepth</span> <span class="o">!=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">dept</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">curDepth</span> <span class="p">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">dept</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">left</span> <span class="p">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">ops</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">ans</span> <span class="p">=</span> <span class="nf">Max</span><span class="p">(</span><span class="nx">ans</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">ops</span><span class="o">-</span><span class="nx">left</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">ans</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Max</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">a</span> <span class="p">&gt;</span> <span class="nx">b</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">a</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">b</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="103-二叉树的锯齿形层次遍历httpsleetcode-cncomproblemsbinary-tree-zigzag-level-order-traversal"><a href="https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/">103. 二叉树的锯齿形层次遍历</a></h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Definition for a binary tree node.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * type TreeNode struct {
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *     Val int
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *     Left *TreeNode
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *     Right *TreeNode
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * }
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">AnnotatedNode</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">node</span>  <span class="o">*</span><span class="nx">TreeNode</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">dept</span><span class="p">,</span> <span class="c1">//深度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">ops</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">linkNode</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">value</span> <span class="o">*</span><span class="nx">AnnotatedNode</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">next</span>  <span class="o">*</span><span class="nx">linkNode</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 链表
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">linkedAnnotatedNodeList</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">head</span>  <span class="o">*</span><span class="nx">linkNode</span> <span class="c1">//队首
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">tail</span>  <span class="o">*</span><span class="nx">linkNode</span> <span class="c1">//队尾
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">count</span> <span class="kt">int</span>       <span class="c1">//长度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 初始化链表
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">NewLinkedAnnotatedNodeList</span><span class="p">()</span> <span class="o">*</span><span class="nx">linkedAnnotatedNodeList</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">linkedAnnotatedNodeList</span><span class="p">{</span><span class="nx">head</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">tail</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">count</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">linkedAnnotatedNodeList</span><span class="p">)</span> <span class="nf">IsEmpty</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">this</span><span class="p">.</span><span class="nx">count</span> <span class="o">==</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">linkedAnnotatedNodeList</span><span class="p">)</span> <span class="nf">Add</span><span class="p">(</span><span class="nx">value</span> <span class="o">*</span><span class="nx">AnnotatedNode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">node</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">linkNode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">node</span><span class="p">.</span><span class="nx">value</span> <span class="p">=</span> <span class="nx">value</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">count</span><span class="o">++</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">this</span><span class="p">.</span><span class="nx">tail</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">this</span><span class="p">.</span><span class="nx">head</span> <span class="p">=</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">this</span><span class="p">.</span><span class="nx">tail</span> <span class="p">=</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">node</span><span class="p">.</span><span class="nx">next</span> <span class="p">=</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">tail</span><span class="p">.</span><span class="nx">next</span> <span class="p">=</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">node</span><span class="p">.</span><span class="nx">next</span> <span class="p">=</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">tail</span> <span class="p">=</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">linkedAnnotatedNodeList</span><span class="p">)</span> <span class="nf">Delete</span><span class="p">()</span> <span class="o">*</span><span class="nx">linkNode</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">this</span><span class="p">.</span><span class="nx">head</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">count</span><span class="o">--</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">this</span><span class="p">.</span><span class="nx">head</span> <span class="o">==</span> <span class="nx">this</span><span class="p">.</span><span class="nx">tail</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">node</span> <span class="o">:=</span> <span class="nx">this</span><span class="p">.</span><span class="nx">head</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">this</span><span class="p">.</span><span class="nx">head</span> <span class="p">=</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">this</span><span class="p">.</span><span class="nx">tail</span> <span class="p">=</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">node</span> <span class="o">:=</span> <span class="nx">this</span><span class="p">.</span><span class="nx">head</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">head</span> <span class="p">=</span> <span class="nx">this</span><span class="p">.</span><span class="nx">head</span><span class="p">.</span><span class="nx">next</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">node</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Queue</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">link</span> <span class="o">*</span><span class="nx">linkedAnnotatedNodeList</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewQueue</span><span class="p">()</span> <span class="o">*</span><span class="nx">Queue</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">Queue</span><span class="p">{</span><span class="nx">link</span><span class="p">:</span> <span class="nf">NewLinkedAnnotatedNodeList</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//加入队列
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">Queue</span><span class="p">)</span> <span class="nf">Put</span><span class="p">(</span><span class="nx">value</span> <span class="o">*</span><span class="nx">AnnotatedNode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">this</span><span class="p">.</span><span class="nx">link</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//pop出队列
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">Queue</span><span class="p">)</span> <span class="nf">Pop</span><span class="p">()</span> <span class="o">*</span><span class="nx">linkNode</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">this</span><span class="p">.</span><span class="nx">link</span><span class="p">.</span><span class="nf">Delete</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//获得队列的长度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">Queue</span><span class="p">)</span> <span class="nf">GetSize</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">this</span><span class="p">.</span><span class="nx">link</span><span class="p">.</span><span class="nx">count</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">Queue</span><span class="p">)</span> <span class="nf">IsEmpty</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">this</span><span class="p">.</span><span class="nf">GetSize</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">zigzagLevelOrder</span><span class="p">(</span><span class="nx">root</span> <span class="o">*</span><span class="nx">TreeNode</span><span class="p">)</span> <span class="p">[][]</span><span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">result</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([][]</span><span class="kt">int</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">query</span> <span class="o">:=</span> <span class="nf">NewQueue</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">query</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">AnnotatedNode</span><span class="p">{</span><span class="nx">node</span><span class="p">:</span> <span class="nx">root</span><span class="p">,</span> <span class="nx">dept</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">ops</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">query</span><span class="p">.</span><span class="nf">GetSize</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">a</span> <span class="o">:=</span> <span class="nx">query</span><span class="p">.</span><span class="nf">Pop</span><span class="p">().</span><span class="nx">value</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">node</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">dept</span> <span class="p">{</span> <span class="c1">//小于层数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="nx">temp</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">temp</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">temp</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">Val</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">result</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">temp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">result</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">dept</span><span class="p">]</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">dept</span><span class="p">],</span> <span class="nx">a</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">Val</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">query</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">AnnotatedNode</span><span class="p">{</span><span class="nx">a</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">Left</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">dept</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">query</span><span class="p">.</span><span class="nf">Put</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">AnnotatedNode</span><span class="p">{</span><span class="nx">a</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">Right</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">dept</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">result</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">k</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">result</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="p">=</span> <span class="nf">stringReverse</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">result</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">stringReverse</span><span class="p">(</span><span class="nx">src</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">[]</span><span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">src</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">panic</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;the src can&#39;t be empty!&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">count</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">src</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">mid</span> <span class="o">:=</span> <span class="nx">count</span> <span class="o">/</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">mid</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">tmp</span> <span class="o">:=</span> <span class="nx">src</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">src</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nx">src</span><span class="p">[</span><span class="nx">count</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">src</span><span class="p">[</span><span class="nx">count</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">tmp</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">count</span><span class="o">--</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">src</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">hxzhouh</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-04-06
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/dfs/">DFS</a>
+          <a href="/tags/bfs/">BFS</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">go 怎么做stw</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-pprof/">
+            <span class="next-text nav-default">go pprof 最佳实践</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hxzhouh@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/hxzhouh" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/zchlwj/" class="iconfont icon-douban" title="douban"></a>
+  <a href="https://hxzhouh.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2020 - 
+    2022
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">hxzhouh</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js" integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js" integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin="anonymous"></script>
+  <script><!-- NOTE: timeago.js uses the language code format like "zh_CN" (underscore and case sensitive) -->
+    var languageCode = "en".replace(/-/g, '_').replace(/_(.*)/, function ($0, $1) {return $0.replace($1, $1.toUpperCase());});
+    timeago().render(document.querySelectorAll('.timeago'), languageCode);
+    timeago.cancel();  
+  </script>
+
+
+
+<script type="text/javascript" src="/js/main.min.30dad356188cdaba5047112eaa8bf5e85cb14ae7e803337403591fce94a531a0.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

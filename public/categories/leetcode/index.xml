@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>leetCode on 萝卜的博客</title>
+    <link>https://hxzhouh.github.io/categories/leetcode/</link>
+    <description>Recent content in leetCode on 萝卜的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 06 Apr 2020 23:15:50 +0000</lastBuildDate><atom:link href="https://hxzhouh.github.io/categories/leetcode/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>深度优先算法与广度优先算法</title>
+      <link>https://hxzhouh.github.io/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Mon, 06 Apr 2020 23:15:50 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</guid>
+      <description>深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深</description>
+    </item>
+    
+    <item>
+      <title>leetcode解题笔记-114-原地算法</title>
+      <link>https://hxzhouh.github.io/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Tue, 24 Mar 2020 11:55:43 +0800</pubDate>
+      
+      <guid>https://hxzhouh.github.io/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/</guid>
+      <description>In computer science, an in-place algorithm is an algorithm which transforms input using no auxiliary data structure. However a small amount of extra storage space is allowed for auxiliary variables. The input is usually overwritten by the output as the algorithm executes. In-place algorithm updates input sequence only through replacement or swapping of elements. An algorithm which is not in-place is sometimes called not-in-place or out-o</description>
+    </item>
+    
+  </channel>
+</rss>

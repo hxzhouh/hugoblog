@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Golang 通过 Consul 实现分布式锁 - 萝卜的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="hxzhouh" /><meta name="description" content="Consul 是什么 Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查," /><meta name="keywords" content="Go, 分布式, 数据库" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.94.0-DEV with theme even" />
+
+
+<link rel="canonical" href="https://hxzhouh.github.io/post/golang-%E9%80%9A%E8%BF%87-consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.651e6917abb0239242daa570c2bec9867267bbcd83646da5a850afe573347b44.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Golang 通过 Consul 实现分布式锁" />
+<meta property="og:description" content="Consul 是什么 Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查," />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://hxzhouh.github.io/post/golang-%E9%80%9A%E8%BF%87-consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2020-03-24T11:55:43+00:00" />
+<meta property="article:modified_time" content="2020-03-24T11:55:43+00:00" />
+
+<meta itemprop="name" content="Golang 通过 Consul 实现分布式锁">
+<meta itemprop="description" content="Consul 是什么 Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查,"><meta itemprop="datePublished" content="2020-03-24T11:55:43+00:00" />
+<meta itemprop="dateModified" content="2020-03-24T11:55:43+00:00" />
+<meta itemprop="wordCount" content="1732">
+<meta itemprop="keywords" content="Go,最佳实践," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Golang 通过 Consul 实现分布式锁"/>
+<meta name="twitter:description" content="Consul 是什么 Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查,"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">萝卜</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">目录</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/categories/arts/">
+        <li class="mobile-menu-item">ARTS</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">萝卜</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">目录</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/arts/">ARTS</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Golang 通过 Consul 实现分布式锁</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-03-24 </span>
+        <div class="post-category">
+            <a href="/categories/go/"> go </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#consul-是什么">Consul 是什么</a></li>
+    <li><a href="#consul-的使用场景">Consul 的使用场景</a></li>
+    <li><a href="#consul-的优势">Consul 的优势</a></li>
+    <li><a href="#consul-的角色">Consul 的角色</a></li>
+    <li><a href="#什么是分布式锁">什么是分布式锁</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#sessions">Sessions</a></li>
+            <li><a href="#golang-api">Golang API</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+  <div class="post-outdated">
+    <div class="warn">
+      <p>【注意】最后更新于 <span class="timeago" datetime="2020-03-24T11:55:43" title="March 24, 2020">March 24, 2020</span>，文中内容可能已过时，请谨慎使用。</p>
+    </div>
+  </div>
+    <div class="post-content">
+      <h1 id="consul-是什么">Consul 是什么</h1>
+<p>Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查,并允许 HTTP 和 DNS 协议调用 API 存储键值对.
+命令行超级好用的虚拟机管理软件 vgrant 也是 HashiCorp 公司开发的产品.
+一致性协议采用 Raft 算法,用来保证服务的高可用. 使用 GOSSIP 协议管理成员和广播消息, 并且支持 ACL 访问控制.</p>
+<h1 id="consul-的使用场景">Consul 的使用场景</h1>
+<ul>
+<li>docker 实例的注册与配置共享</li>
+<li>coreos 实例的注册与配置共享</li>
+<li>vitess 集群</li>
+<li>SaaS 应用的配置共享</li>
+<li>与 confd 服务集成，动态生成 nginx 和 haproxy 配置文件</li>
+</ul>
+<h1 id="consul-的优势">Consul 的优势</h1>
+<ul>
+<li>使用 Raft 算法来保证一致性, 比复杂的 Paxos 算法更直接. 相比较而言, zookeeper 采用的是 Paxos, 而 etcd 使用的则是 Raft.</li>
+<li>支持多数据中心，内外网的服务采用不同的端口进行监听。 多数据中心集群可以避免单数据中心的单点故障,而其部署则需要考虑网络延迟, 分片等情况等. zookeeper 和 etcd 均不提供多数据中心功能的支持.</li>
+<li>支持健康检查. etcd 不提供此功能.</li>
+<li>支持 http 和 dns 协议接口. zookeeper 的集成较为复杂, etcd 只支持 http 协议.</li>
+<li>官方提供web管理界面, etcd 无此功能.
+综合比较, Consul 作为服务注册和配置管理的新星, 比较值得关注和研究.</li>
+</ul>
+<h1 id="consul-的角色">Consul 的角色</h1>
+<p>client: 客户端, 无状态, 将 HTTP 和 DNS 接口请求转发给局域网内的服务端集群.
+server: 服务端, 保存配置信息, 高可用集群, 在局域网内与本地客户端通讯, 通过广域网与其他数据中心通讯. 每个数据中心的 server 数量推荐为 3 个或是 5 个.</p>
+<h1 id="什么是分布式锁">什么是分布式锁</h1>
+<p><strong>分布式锁</strong>，是控制<a href="https://zh.wikipedia.org/w/index.php?title=%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F&amp;action=edit&amp;redlink=1" title="分布式系统（页面不存在）">分布式系统</a>之间同步访问共享<a href="https://zh.wikipedia.org/wiki/%E8%B5%84%E6%BA%90" title="资源">资源</a>的一种方式。在分布式系统中，常常需要协调他们的动作。如果不同的系统或是同一个系统的不同主机之间共享了一个或一组资源，那么访问这些资源的时候，往往需要<a href="https://zh.wikipedia.org/wiki/%E4%BA%92%E6%96%A5" title="互斥">互斥</a>来防止彼此干扰来保证一致性，在这种情况下，便需要使用到分布式锁。
+目前几乎很多大型网站及应用都是分布式部署的，分布式场景中的数据一致性问题一直是一个比较重要的话题。分布式的CAP理论告诉我们“任何一个分布式系统都无法同时满足一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance），最多只能同时满足两项。”所以，很多系统在设计之初就要对这三者做出取舍。在互联网领域的绝大多数的场景中，都需要牺牲强一致性来换取系统的高可用性，系统往往只需要保证“最终一致性”，只要这个最终时间是在用户可以接受的范围内即可。
+在很多场景中，我们为了保证数据的最终一致性，需要很多的技术方案来支持，比如分布式事务、分布式锁等。有的时候，我们需要保证一个方法在同一时间内只能被同一个线程执行。
+在这里我们使用Consul来管理分布式锁。Consul内置了服务注册与发现框 架、分布一致性协议实现、健康检查、Key/Value存储、多数据中心方案，不再需要依赖其他工具（比如<a href="http://tonybai.com/tag/zookeeper">ZooKeeper</a>等）。</p>
+<h3 id="sessions">Sessions</h3>
+<p><a href="https://o6rr5e4by.qnssl.com/wp-content/uploads/2017/01/consul-sessions-56bc7006.png"></a>
+session是一个远程进程和consul节点之间的链接，它由一个远程进程和可以显式无效或由于健康检查机制。根据会话配置，创建与已失效会话锁摧毁或释放。</p>
+<h4 id="health-checks">Health checks</h4>
+<p>Consul支持多种检查 （如 HTTP、 TCP 等）。在session创建过程中可以定义的健康检查列表。这些检查将用于确定是否sessio需要使之失效。</p>
+<h4 id="ttl">TTL</h4>
+<p>除了健康检查，会话也具有内置支持的 TTL。当 TTL 过期session被视为无效。远程进程负责更新session之前 TTL 过期。</p>
+<h3 id="golang-api">Golang API</h3>
+<p><a href="https://godoc.org/github.com/hashicorp/consul/api">Consul API client</a> 提供一个方便的抽象，session和 K/V 存储。有是一个锁结构与锁定、 解锁和破坏的方法。也有用于帮助创建锁实例方法。API 客户端还负责更新会话。</p>
+<h4 id="creating-the-consul-client">Creating the Consul client</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="nx">client</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">NewClient</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">api</span><span class="p">.</span><span class="nx">Config</span><span class="p">{</span><span class="nx">Address</span><span class="p">:</span> <span class="s">&#34;127.0.0.1:8500&#34;</span><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="creating-lock-instance">Creating Lock instance</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">LockOptions</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Key</span> <span class="kt">string</span> <span class="c1">// Must be set and have write permissions
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">Value</span> <span class="p">[]</span><span class="kt">byte</span> <span class="c1">// Optional, value to associate with the lock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">Session</span> <span class="kt">string</span> <span class="c1">// Optional, created if not specified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">SessionOpts</span> <span class="o">*</span><span class="nx">SessionEntry</span> <span class="c1">// Optional, options to use when creating a session
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">SessionName</span> <span class="kt">string</span> <span class="c1">// Optional, defaults to DefaultLockSessionName (ignored if SessionOpts is given)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">SessionTTL</span> <span class="kt">string</span> <span class="c1">// Optional, defaults to DefaultLockSessionTTL (ignored if SessionOpts is given)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">MonitorRetries</span> <span class="kt">int</span> <span class="c1">// Optional, defaults to 0 which means no retries
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">MonitorRetryTime</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span> <span class="c1">// Optional, defaults to DefaultMonitorRetryTime
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">LockWaitTime</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span> <span class="c1">// Optional, defaults to DefaultLockWaitTime
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">LockTryOnce</span> <span class="kt">bool</span> <span class="c1">// Optional, defaults to false which means try forever
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>LockOptions 是所有可能的选项的容器，可以用于设置键和值、 定制会话或设置TTL。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="nx">opts</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">api</span><span class="p">.</span><span class="nx">LockOptions</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Key</span><span class="p">:</span> <span class="s">&#34;webhook_receiver/1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Value</span><span class="p">:</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;set by sender 1&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">SessionTTL</span><span class="p">:</span> <span class="s">&#34;10s&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">SessionOpts</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">api</span><span class="p">.</span><span class="nx">SessionEntry</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Checks</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;check1&#34;</span><span class="p">,</span> <span class="s">&#34;check2&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Behavior</span><span class="p">:</span> <span class="s">&#34;release&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">lock</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">LockOpts</span><span class="p">(</span><span class="nx">opts</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>另一种常用的方法是 LockKey，它创建一个锁与所有选项设置为默认条目名称除外。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl">    <span class="nx">lock</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">LockKey</span><span class="p">(</span><span class="s">&#34;webhook_receiver/1&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="acquiring-lock">Acquiring lock</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="nx">stopCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+</span></span><span class="line"><span class="cl"><span class="nx">lockCh</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">lock</span><span class="p">.</span><span class="nf">Lock</span><span class="p">(</span><span class="nx">stopCh</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">cancelCtx</span><span class="p">,</span> <span class="nx">cancelRequest</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithCancel</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="nx">req</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="s">&#34;GET&#34;</span><span class="p">,</span> <span class="s">&#34;https://example.com/webhook&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">req</span> <span class="p">=</span> <span class="nx">req</span><span class="p">.</span><span class="nf">WithContext</span><span class="p">(</span><span class="nx">cancelCtx</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="nx">http</span><span class="p">.</span><span class="nx">DefaultClient</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">select</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="k">case</span> <span class="o">&lt;-</span><span class="nx">cancelCtx</span><span class="p">.</span><span class="nf">Done</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl"><span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;request cancelled&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">default</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;request done&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">err</span> <span class="p">=</span> <span class="nx">lock</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;lock already unlocked&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}()</span>
+</span></span><span class="line"><span class="cl"><span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;-</span><span class="nx">lockCh</span>
+</span></span><span class="line"><span class="cl"><span class="nf">cancelRequest</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">hxzhouh</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-03-24
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/go/">Go</a>
+          <a href="/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">最佳实践</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-pprof/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">go pprof 最佳实践</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/">
+            <span class="next-text nav-default">leetcode解题笔记-114-原地算法</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hxzhouh@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/hxzhouh" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/zchlwj/" class="iconfont icon-douban" title="douban"></a>
+  <a href="https://hxzhouh.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2020 - 
+    2022
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">hxzhouh</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js" integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js" integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin="anonymous"></script>
+  <script><!-- NOTE: timeago.js uses the language code format like "zh_CN" (underscore and case sensitive) -->
+    var languageCode = "en".replace(/-/g, '_').replace(/_(.*)/, function ($0, $1) {return $0.replace($1, $1.toUpperCase());});
+    timeago().render(document.querySelectorAll('.timeago'), languageCode);
+    timeago.cancel();  
+  </script>
+
+
+
+<script type="text/javascript" src="/js/main.min.30dad356188cdaba5047112eaa8bf5e85cb14ae7e803337403591fce94a531a0.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

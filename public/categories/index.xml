@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on 萝卜的博客</title>
+    <link>https://hxzhouh.github.io/categories/</link>
+    <description>Recent content in Categories on 萝卜的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 21 Sep 2020 09:19:00 +0000</lastBuildDate><atom:link href="https://hxzhouh.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>arts</title>
+      <link>https://hxzhouh.github.io/categories/arts/</link>
+      <pubDate>Mon, 21 Sep 2020 09:19:00 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/categories/arts/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Go</title>
+      <link>https://hxzhouh.github.io/categories/go/</link>
+      <pubDate>Wed, 29 Apr 2020 22:50:50 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/categories/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>leetCode</title>
+      <link>https://hxzhouh.github.io/categories/leetcode/</link>
+      <pubDate>Mon, 06 Apr 2020 23:15:50 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/categories/leetcode/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>数据结构&amp;算法</title>
+      <link>https://hxzhouh.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Mon, 06 Apr 2020 23:15:50 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>redis</title>
+      <link>https://hxzhouh.github.io/categories/redis/</link>
+      <pubDate>Mon, 16 Mar 2020 22:50:50 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/categories/redis/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

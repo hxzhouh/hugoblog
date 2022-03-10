@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>BFS on 萝卜的博客</title>
+    <link>https://hxzhouh.github.io/tags/bfs/</link>
+    <description>Recent content in BFS on 萝卜的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 06 Apr 2020 23:15:50 +0000</lastBuildDate><atom:link href="https://hxzhouh.github.io/tags/bfs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>深度优先算法与广度优先算法</title>
+      <link>https://hxzhouh.github.io/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Mon, 06 Apr 2020 23:15:50 +0000</pubDate>
+      
+      <guid>https://hxzhouh.github.io/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</guid>
+      <description>深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深</description>
+    </item>
+    
+  </channel>
+</rss>
