@@ -2,7 +2,7 @@
 title: "Newsletter 202212"
 date: 2022-03-11T20:48:08+08:00
 lastmod: 2022-03-11T20:48:08+08:00
-draft: true
+draft: false
 keywords: []
 description: ""
 tags: []
