@@ -53,6 +53,11 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   weight = 50
   identifier = "arts"
   url = "/categories/arts/"
+[[menu.main]]
+  name = "NewsLetter"
+  weight = 50
+  identifier = "newsletter"
+  url = "/categories/newsletter/"
 [taxonomies]
   tag = "tags"
   series = "series"
