@@ -89,6 +89,15 @@
     </item>
     
     <item>
+      <title>test-img</title>
+      <link>https://hxzhouh.github.io/post/test-img/</link>
+      <pubDate>Sat, 21 Mar 2020 11:55:43 +0800</pubDate>
+      
+      <guid>https://hxzhouh.github.io/post/test-img/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>理解 Go make 和 new 的区别</title>
       <link>https://hxzhouh.github.io/post/new%E8%B7%9Fmake-%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
       <pubDate>Sat, 21 Mar 2020 11:55:43 +0800</pubDate>
