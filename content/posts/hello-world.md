@@ -1,7 +1,7 @@
 ---
-title: "{{ replace .TranslationBaseName "-" " " | title }}"
-date: {{ .Date }}
-lastmod: {{ .Date }}
+title: "Hello World"
+date: 2022-03-11T17:41:28+08:00
+lastmod: 2022-03-11T17:41:28+08:00
 draft: true
 keywords: []
 description: ""
@@ -39,3 +39,7 @@ sequenceDiagrams:
   options: ""
 
 ---
+
+
+hello，world.
+
