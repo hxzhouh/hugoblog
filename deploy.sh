@@ -10,11 +10,12 @@ set -e
 #cp /d/和彩云同步文件夹/13689512015/blog/arts/* /d/me/hugo-bolg/content/post/
 
 # 删除打包文件夹
-rm -rf public
+#rm -rf public
 
 # 打包。even 是主题
-hugo -t even # if using a theme, replace with `hugo -t <YOURTHEME>`
+#hugo -t even # if using a theme, replace with `hugo -t <YOURTHEME>`
 # 进入打包文件夹
+git pull 
 git add -A
 # Commit changes.
 msg="building site `date`"
