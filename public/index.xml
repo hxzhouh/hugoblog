@@ -1,19 +1,74 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>hxzhouh&#39;s blog</title>
+    <title>萝卜的博客</title>
     <link>https://blog.hxzhouh.com/</link>
-    <description>Recent content on hxzhouh&#39;s blog</description>
+    <description>Recent content on 萝卜的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <lastBuildDate>Fri, 22 Sep 2023 10:42:13 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/index.xml" rel="self" type="application/rss+xml" />
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 22 Sep 2023 16:44:12 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ARTS-2023-38</title>
+      <link>https://blog.hxzhouh.com/post/ARTS-2023-38/</link>
+      <pubDate>Fri, 22 Sep 2023 16:44:12 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/ARTS-2023-38/</guid>
+      <description>ARTS-2023-38 ARTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇英文文章， Technique/Tips 是分享一个小技术， Share 是分享一个观点。 {{title}} [[Algorithm]] leetCode 122 用[[动态规划]] 来做这个题目 1 2 3 4 5 6 7 8 9 10 11 12 13 func maxProfit(prices []int) (ans int) { for i := 1; i &amp;lt; len(prices);</description>
+    </item>
+    
     <item>
       <title>Linux 远程服务器免密登录</title>
-      <link>https://blog.hxzhouh.com/post/linux-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/</link>
+      <link>https://blog.hxzhouh.com/post/Linux-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/</link>
       <pubDate>Fri, 22 Sep 2023 10:42:13 +0800</pubDate>
       
-      <guid>https://blog.hxzhouh.com/post/linux-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/</guid>
-      <description>免密登录的原理：通过密钥认证登录，首先在自己的服务器上生成公钥和私钥，其次将公钥上传到远程服务中，在于远程服务器建立连接通信时，远程服务器首</description>
+      <guid>https://blog.hxzhouh.com/post/Linux-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/</guid>
+      <description>Linux 远程服务器免密登录 免密登录的原理：通过密钥认证登录，首先在自己的服务器上生成公钥和私钥，其次将公钥上传到远程服务中，在于远程服务器建立连接通信时，远程服务器首先会验证该服务器上是否包含请求服务器的公钥，若不包含则需要远程登录的用户输入密码。 免密登录的原理：通过密钥认证登录，首先</description>
+    </item>
+    
+    <item>
+      <title>ARTS 0914-0920</title>
+      <link>https://blog.hxzhouh.com/post/ARTS-0914-0920/</link>
+      <pubDate>Thu, 21 Sep 2023 21:47:34 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/ARTS-0914-0920/</guid>
+      <description>RTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇英文文章， Technique/Tips 是分享一个小技术， Share 是分享一个观点。 Algorithm: leetCode: 82 83 Review https://blog.pixielabs.ai/blog/ebpf-function-tracing/post/</description>
+    </item>
+    
+    <item>
+      <title>ARTS 0907-0913</title>
+      <link>https://blog.hxzhouh.com/post/ARTS-0907-0913/</link>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/ARTS-0907-0913/</guid>
+      <description>ARTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇英文文章， Technique/Tips 是分享一个小技术， Share 是分享一个观点。 Algorithm: leetcode 206 leetcode 141 leetcode 19 Review Kubernetes如何改变美团的云基础设施？</description>
+    </item>
+    
+    <item>
+      <title>Golang 大杀器之性能剖析 PProf</title>
+      <link>https://blog.hxzhouh.com/post/Golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-PProf/</link>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/Golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-PProf/</guid>
+      <description>Golang 大杀器之性能剖析 PProf 前言 写了几吨代码，实现了几百个接口。功能测试也通过了，终于成功的部署上线了 结果，性能不佳，什么鬼？😭 想做性能分析 PProf 想要进行性能优化，首先瞩目在 Go 自身提供的工具链来作为分析依据，本文将带你学习、使用 Go 后花园，涉及如下： runtime/pprof：采集程序（非 Se</description>
+    </item>
+    
+    <item>
+      <title>深度优先算法与广度优先算法</title>
+      <link>https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</guid>
+      <description>深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深度遍历树的节点，尽可能深的搜索树的分 支。 当节点v的所有边都己被探寻过，搜索将回溯到发现节点v的那条边的起始节点。 这一过程一直进行到已发现从源</description>
+    </item>
+    
+    <item>
+      <title>聊聊Redis  链表</title>
+      <link>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8ARedis-%E9%93%BE%E8%A1%A8/</link>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8ARedis-%E9%93%BE%E8%A1%A8/</guid>
+      <description>&lt;p&gt;链表提供了高效的节点重排能力， 以及顺序性的节点访问方式， 并且可以通过增删节点来灵活地调整链表的长度。&lt;/p&gt;
+&lt;p&gt;链表在 Redis 中的应用非常广泛， 比如列表键的底层实现之一就是链表： 当一个列表键包含了数量比较多的元素， 又或者列表中包含的元素都是比较长的字符串时， Redis 就会使用链表作为列表键的底层实现。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -26,30 +81,12 @@
     </item>
     
     <item>
-      <title>ARTS 0914-0920</title>
-      <link>https://blog.hxzhouh.com/post/arts-0914-0920/</link>
-      <pubDate>Mon, 21 Sep 2020 09:19:00 +0000</pubDate>
-      
-      <guid>https://blog.hxzhouh.com/post/arts-0914-0920/</guid>
-      <description>RTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇</description>
-    </item>
-    
-    <item>
-      <title>ARTS 0907-0913</title>
-      <link>https://blog.hxzhouh.com/post/arts-0907-0913/</link>
-      <pubDate>Sun, 13 Sep 2020 19:19:00 +0000</pubDate>
-      
-      <guid>https://blog.hxzhouh.com/post/arts-0907-0913/</guid>
-      <description>ARTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇</description>
-    </item>
-    
-    <item>
       <title>Go - Ordering in Select Statements</title>
-      <link>https://blog.hxzhouh.com/post/go-ordering-in-select-statements/</link>
+      <link>https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/</link>
       <pubDate>Wed, 29 Apr 2020 22:50:50 +0000</pubDate>
       
-      <guid>https://blog.hxzhouh.com/post/go-ordering-in-select-statements/</guid>
-      <description>原文链接 Vincent Blanchon 本文基于 go 1.14 select 允许在一个goroutine中管理多个channel。但是，当所有channel同时就绪的时候，go需要在其中选择</description>
+      <guid>https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/</guid>
+      <description>原文链接 Vincent Blanchon 本文基于 go 1.14 select 允许在一个goroutine中管理多个channel。但是，当所有channel同时就绪的时候，go需要在其中选择一个执行。go还需要处理没有channel就绪的情况，我们先从就绪的channel开始。 Order select 不会按照任何规则或者优先级选择到达的channe</description>
     </item>
     
     <item>
@@ -58,34 +95,16 @@
       <pubDate>Tue, 28 Apr 2020 21:19:00 +0000</pubDate>
       
       <guid>https://blog.hxzhouh.com/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/</guid>
-      <description>原文链接: Go: How Does Go Stop the World? : Author : Vincent Blanchon 本文基于 go 1.13 在垃圾回收算法中，Stop The Word（STW）是一个很重要的概念，他会中断程序运行，添加写屏障</description>
-    </item>
-    
-    <item>
-      <title>深度优先算法与广度优先算法</title>
-      <link>https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</link>
-      <pubDate>Mon, 06 Apr 2020 23:15:50 +0000</pubDate>
-      
-      <guid>https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</guid>
-      <description>深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深</description>
-    </item>
-    
-    <item>
-      <title>go pprof 最佳实践</title>
-      <link>https://blog.hxzhouh.com/post/golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-pprof/</link>
-      <pubDate>Fri, 03 Apr 2020 11:55:43 +0000</pubDate>
-      
-      <guid>https://blog.hxzhouh.com/post/golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-pprof/</guid>
-      <description>前言 写了几吨代码，实现了几百个接口。功能测试也通过了，终于成功的部署上线了 结果，性能不佳，什么鬼？😭 想做性能分析 PProf 想要进行性能优化，首先瞩目</description>
+      <description>原文链接: Go: How Does Go Stop the World? : Author : Vincent Blanchon 本文基于 go 1.13 在垃圾回收算法中，Stop The Word（STW）是一个很重要的概念，他会中断程序运行，添加写屏障，以便扫描内存 ,现在一起来看看它内部的原理以及可能存在的问题 STW 停止程序运行意味着停止所有运行态的goroutines,一个简单的例子: 1 2 3</description>
     </item>
     
     <item>
       <title>Golang 通过 Consul 实现分布式锁</title>
-      <link>https://blog.hxzhouh.com/post/golang-%E9%80%9A%E8%BF%87-consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</link>
+      <link>https://blog.hxzhouh.com/post/Golang-%E9%80%9A%E8%BF%87-Consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</link>
       <pubDate>Tue, 24 Mar 2020 11:55:43 +0000</pubDate>
       
-      <guid>https://blog.hxzhouh.com/post/golang-%E9%80%9A%E8%BF%87-consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</guid>
-      <description>Consul 是什么 Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查,</description>
+      <guid>https://blog.hxzhouh.com/post/Golang-%E9%80%9A%E8%BF%87-Consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</guid>
+      <description>Consul 是什么 Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查,并允许 HTTP 和 DNS 协议调用 API 存储键值对. 命令行超级好用的虚拟机管理软件 vgrant 也是 HashiCorp 公司开发的产品. 一致性协议采用 Raft 算法,用来保证服务的高可用. 使用 GOSSIP 协</description>
     </item>
     
     <item>
@@ -94,7 +113,7 @@
       <pubDate>Tue, 24 Mar 2020 11:55:43 +0800</pubDate>
       
       <guid>https://blog.hxzhouh.com/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/</guid>
-      <description>In computer science, an in-place algorithm is an algorithm which transforms input using no auxiliary data structure. However a small amount of extra storage space is allowed for auxiliary variables. The input is usually overwritten by the output as the algorithm executes. In-place algorithm updates input sequence only through replacement or swapping of elements. An algorithm which is not in-place is sometimes called not-in-place or out-o</description>
+      <description>In computer science, an in-place algorithm is an algorithm which transforms input using no auxiliary data structure. However a small amount of extra storage space is allowed for auxiliary variables. The input is usually overwritten by the output as the algorithm executes. In-place algorithm updates input sequence only through replacement or swapping of elements. An algorithm which is not in-place is sometimes called not-in-place or out-of-place.——摘自原地算法的维基百科 一句话总结就是: 原地算法不依赖额外的资源或者依赖少数的额外资源，仅依靠输出来覆盖输入的一种算法操作</description>
     </item>
     
     <item>
@@ -103,26 +122,16 @@
       <pubDate>Sat, 21 Mar 2020 11:55:43 +0000</pubDate>
       
       <guid>https://blog.hxzhouh.com/post/go-trace-view-trace-%E6%98%BE%E7%A4%BA%E7%A9%BA%E7%99%BD/</guid>
-      <description>go trace 用来跟踪 goroutines运行情况,跟pprof配合使用，可以起到事半功倍的效果。但是，go trace 的view trace 在chrome下一片空白。 原</description>
+      <description>go trace 用来跟踪 goroutines运行情况,跟pprof配合使用，可以起到事半功倍的效果。但是，go trace 的view trace 在chrome下一片空白。 原因是因为谷歌在某一版本的chrome中禁用了本地API 解决办法： 注册一个chrome token https://developers.chrome.com/origintrials/#/register_trial/2431943798780067841 资料随便填写，记得最后一定要 feedback。 修改 go</description>
     </item>
     
     <item>
-      <title>理解 Go make 和 new 的区别</title>
+      <title>new跟make 的区别</title>
       <link>https://blog.hxzhouh.com/post/new%E8%B7%9Fmake-%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
       <pubDate>Sat, 21 Mar 2020 11:55:43 +0800</pubDate>
       
       <guid>https://blog.hxzhouh.com/post/new%E8%B7%9Fmake-%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
-      <description>new 和 make 都可以用来分配空间，初始化类型，但是它们确有不同。 new(T) 返回的是 T 的指针 new(T) 为一个 T 类型新值分配空间并将此空间初始化为 T 的零值，返回的是新值</description>
-    </item>
-    
-    <item>
-      <title>聊聊redis的链表</title>
-      <link>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-%E9%93%BE%E8%A1%A8/</link>
-      <pubDate>Mon, 16 Mar 2020 22:50:50 +0000</pubDate>
-      
-      <guid>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-%E9%93%BE%E8%A1%A8/</guid>
-      <description>&lt;p&gt;链表提供了高效的节点重排能力， 以及顺序性的节点访问方式， 并且可以通过增删节点来灵活地调整链表的长度。&lt;/p&gt;
-&lt;p&gt;链表在 Redis 中的应用非常广泛， 比如列表键的底层实现之一就是链表： 当一个列表键包含了数量比较多的元素， 又或者列表中包含的元素都是比较长的字符串时， Redis 就会使用链表作为列表键的底层实现。&lt;/p&gt;</description>
+      <description>new跟make 的区别 new 和 make 都可以用来分配空间，初始化类型，但是它们确有不同。 new(T) 返回的是 T 的指针 new(T) 为一个 T 类型新值分配空间并将此空间初始化为 T 的零值，返回的是新值的地址，也就是 T 类型的指针 *T，该指针指向 T 的新分配的零值。 1 2 3 4 5 6 7 8 p1 := new(int) fmt.Printf(&amp;#34;p1 --&amp;gt; %#v \n &amp;#34;, p1) //(*int)(0xc42000e250) fmt.Printf(&amp;#34;p1 point to --&amp;gt; %#v \n &amp;#34;, *p1) //0 var p2</description>
     </item>
     
     <item>
@@ -133,6 +142,33 @@
       <guid>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/</guid>
       <description>&lt;p&gt;SDS全拼为：&lt;code&gt;simple dynamic string&lt;/code&gt;，解释为：简单动态字符串&lt;/p&gt;
 &lt;p&gt;​    C语言字符串使用长度为n+1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&amp;rsquo;\0&amp;rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>关于我</title>
+      <link>https://blog.hxzhouh.com/about/</link>
+      <pubDate>Tue, 10 Mar 2015 00:13:27 +0000</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/about/</guid>
+      <description>我是萝卜</description>
+    </item>
+    
+    <item>
+      <title>归档</title>
+      <link>https://blog.hxzhouh.com/archives/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/archives/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>搜索</title>
+      <link>https://blog.hxzhouh.com/search/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/search/</guid>
+      <description></description>
     </item>
     
   </channel>

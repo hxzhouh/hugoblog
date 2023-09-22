@@ -1,172 +1,212 @@
-<!DOCTYPE html>
-<html lang="zh-cn">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Go - Ordering in Select Statements - hxzhouh&#39;s blog</title>
-  <meta name="renderer" content="webkit" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-<meta name="theme-color" content="#f8f5ec" />
-<meta name="msapplication-navbutton-color" content="#f8f5ec">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
-
-
-<meta name="author" content="hxzhouh" /><meta name="description" content="原文链接 Vincent Blanchon 本文基于 go 1.14 select 允许在一个goroutine中管理多个channel。但是，当所有channel同时就绪的时候，go需要在其中选择" /><meta name="keywords" content="Go, 分布式, 数据库" />
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.118.2 with theme even" />
-
-
-<link rel="canonical" href="https://blog.hxzhouh.com/post/go-ordering-in-select-statements/" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/manifest.json">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-
-
-
-<link href="/sass/main.min.2a3766884c406c389d3a4ca20b300e80e434d78f1c08825bbdf164a13f4a4235.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
-
-
-<meta property="og:title" content="Go - Ordering in Select Statements" />
-<meta property="og:description" content="原文链接 Vincent Blanchon 本文基于 go 1.14 select 允许在一个goroutine中管理多个channel。但是，当所有channel同时就绪的时候，go需要在其中选择" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.hxzhouh.com/post/go-ordering-in-select-statements/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2020-04-29T22:50:50+00:00" />
-<meta property="article:modified_time" content="2020-04-29T22:50:50+00:00" />
-<meta itemprop="name" content="Go - Ordering in Select Statements">
-<meta itemprop="description" content="原文链接 Vincent Blanchon 本文基于 go 1.14 select 允许在一个goroutine中管理多个channel。但是，当所有channel同时就绪的时候，go需要在其中选择"><meta itemprop="datePublished" content="2020-04-29T22:50:50+00:00" />
-<meta itemprop="dateModified" content="2020-04-29T22:50:50+00:00" />
-<meta itemprop="wordCount" content="1281">
-<meta itemprop="keywords" content="go,go 底层," /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Go - Ordering in Select Statements"/>
-<meta name="twitter:description" content="原文链接 Vincent Blanchon 本文基于 go 1.14 select 允许在一个goroutine中管理多个channel。但是，当所有channel同时就绪的时候，go需要在其中选择"/>
-
-<!--[if lte IE 9]>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
-<![endif]-->
-
-<!--[if lt IE 9]>
-  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
-<![endif]-->
-
-</head>
-<body>
-  <div id="mobile-navbar" class="mobile-navbar">
-  <div class="mobile-header-logo">
-    <a href="/" class="logo">萝卜</a>
-  </div>
-  <div class="mobile-navbar-icon">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-</div>
-<nav id="mobile-menu" class="mobile-menu slideout-menu">
-  <ul class="mobile-menu-list">
-    <a href="/">
-        <li class="mobile-menu-item">主页</li>
-      </a><a href="/post/">
-        <li class="mobile-menu-item">目录</li>
-      </a><a href="/tags/">
-        <li class="mobile-menu-item">标签</li>
-      </a><a href="/categories/">
-        <li class="mobile-menu-item">分类</li>
-      </a><a href="/categories/arts/">
-        <li class="mobile-menu-item">ARTS</li>
-      </a><a href="/categories/newsletter/">
-        <li class="mobile-menu-item">NewsLetter</li>
-      </a>
-  </ul>
-
-  
-
-
-</nav>
-
-  <div class="container" id="mobile-panel">
-    <header id="header" class="header">
-        <div class="logo-wrapper">
-  <a href="/" class="logo">萝卜</a>
-</div>
-
-
-
-
-
-<nav class="site-navbar">
-  <ul id="menu" class="menu">
-    <li class="menu-item">
-        <a class="menu-item-link" href="/">主页</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/post/">目录</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/tags/">标签</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/categories/">分类</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/categories/arts/">ARTS</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/categories/newsletter/">NewsLetter</a>
-      </li>
-  </ul>
-</nav>
-
-    </header>
-
-    <main id="main" class="main">
-      <div class="content-wrapper">
-        <div id="content" class="content">
-          <article class="post">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <header class="post-header">
-      <h1 class="post-title">Go - Ordering in Select Statements</h1>
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
 
-      <div class="post-meta">
-        <span class="post-time"> 2020-04-29 </span>
-        <div class="post-category">
-            <a href="/categories/go/"> Go </a>
-            </div>
-          <span class="more-meta"> 约 1281 字 </span>
-          <span class="more-meta"> 预计阅读 3 分钟 </span>
+    <title>Go - Ordering in Select Statements | 萝卜的博客</title>
+    <meta property="og:title" content="Go - Ordering in Select Statements - 萝卜的博客">
+    <meta property="og:type" content="article">
         
-      </div>
-    </header>
+    <meta property="article:published_time" content='2020-04-29T22:50:50&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2020-04-29T22:50:50&#43;08:00'>
+        
+    <meta name="Keywords" content="golang,go语言,go语言笔记,性能优化">
+    <meta name="description" content="Go - Ordering in Select Statements">
+        
+    <meta name="author" content="hxzhouh">
+    <meta property="og:url" content="https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
 
-    <div class="post-toc" id="post-toc">
-  <h2 class="post-toc-title">文章目录</h2>
-  <div class="post-toc-content always-active">
-    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#order">Order</a></li>
-    <li><a href="#non-ready-channels">Non-ready channels</a></li>
-    <li><a href="#simplification">Simplification</a></li>
-  </ul>
-</nav>
-  </div>
-</div>
-  <div class="post-outdated">
-    <div class="warn">
-      <p>【注意】最后更新于 <span class="timeago" datetime="2020-04-29T22:50:50" title="April 29, 2020">April 29, 2020</span>，文中内容可能已过时，请谨慎使用。</p>
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/douban.css'>
+    
+        <link rel="stylesheet" href='/css/other.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://blog.hxzhouh.com">
+                        萝卜的博客
+                    </a>
+                
+                <p class="description">专注于后端开发,性能优化以及个人成长</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://blog.hxzhouh.com">Home</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/tools/" title="工具">工具</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
     </div>
-  </div>
-    <div class="post-content">
-      <p><a href="https://medium.com/a-journey-with-go/go-ordering-in-select-statements-fd0ff80fd8d6">原文链接</a></p>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">Table of Contents</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents"></nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Go - Ordering in Select Statements</h1>
+        </header>
+        
+  <time datetime="2020-04-29T22:50:50Z" class="post-meta meta-date dt-published">
+    2020-04-29
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/Go' target="_blank">Go</a>
+  
+</div>
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="post-content">
+            <p><a href="https://medium.com/a-journey-with-go/go-ordering-in-select-statements-fd0ff80fd8d6">原文链接</a></p>
 <p><a href="https://medium.com/@blanchon.vincent?source=post_page-----fd0ff80fd8d6----------------------">Vincent Blanchon</a></p>
 <hr>
-<p><img src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200429220520.png" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200429220520.png" />   
+    </p>
 <blockquote>
 <p>本文基于 go 1.14</p>
 </blockquote>
@@ -174,387 +214,580 @@
 <h1 id="order">Order</h1>
 <p><code>select</code> 不会按照任何规则或者优先级选择到达的channel。go标准库在每次访问的时候，都会将他们顺序打乱，也就是说不能保证任何顺序。</p>
 <p>看一个有三个就绪的channel的例子：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">a</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">b</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">a</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">b</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">		<span class="nx">c</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">select</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">a</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">			<span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; a&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">b</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">			<span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; b&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">c</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">			<span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; c&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">		<span class="k">default</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">			<span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; default&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">		<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">func</span> <span style="color:#900;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>	a <span style="color:#000;font-weight:bold">:=</span> <span style="color:#0086b3">make</span>(<span style="color:#000;font-weight:bold">chan</span> <span style="color:#458;font-weight:bold">bool</span>, <span style="color:#099">100</span>)
+</span></span><span style="display:flex;"><span>	b <span style="color:#000;font-weight:bold">:=</span> <span style="color:#0086b3">make</span>(<span style="color:#000;font-weight:bold">chan</span> <span style="color:#458;font-weight:bold">bool</span>, <span style="color:#099">100</span>)
+</span></span><span style="display:flex;"><span>	c <span style="color:#000;font-weight:bold">:=</span> <span style="color:#0086b3">make</span>(<span style="color:#000;font-weight:bold">chan</span> <span style="color:#458;font-weight:bold">bool</span>, <span style="color:#099">100</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#000;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">:=</span> <span style="color:#099">0</span>; i &lt; <span style="color:#099">10</span>; i<span style="color:#000;font-weight:bold">++</span> {
+</span></span><span style="display:flex;"><span>		a <span style="color:#000;font-weight:bold">&lt;-</span> <span style="color:#000;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>		b <span style="color:#000;font-weight:bold">&lt;-</span> <span style="color:#000;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>		c <span style="color:#000;font-weight:bold">&lt;-</span> <span style="color:#000;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#000;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">:=</span> <span style="color:#099">0</span>; i &lt; <span style="color:#099">10</span>; i<span style="color:#000;font-weight:bold">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#000;font-weight:bold">select</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>a:
+</span></span><span style="display:flex;"><span>			<span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; a&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>b:
+</span></span><span style="display:flex;"><span>			<span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; b&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>c:
+</span></span><span style="display:flex;"><span>			<span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; c&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#000;font-weight:bold">default</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; default&#34;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>这三个channel都有三个完整的buffer（不会阻塞），下面是程序的输出</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">&lt; b&lt; a&lt; a&lt; b&lt; c&lt; c&lt; c&lt; a&lt; b&lt; b
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>&lt; b&lt; a&lt; a&lt; b&lt; c&lt; c&lt; c&lt; a&lt; b&lt; b
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>在 select 的每次迭代中，case 都会被打乱：</p>
-<p><img src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200429223415.png" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200429223415.png" />   
+    </p>
 <p>由于go 不会删除重复的channel，所以可以使用多次添加case来影响结果，代码如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">a</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">b</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">   <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nx">a</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">      <span class="nx">b</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">      <span class="nx">c</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">   <span class="p">}</span>
-</span></span><span class="line"><span class="cl">   <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="k">select</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">a</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; a&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">a</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; a&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">a</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; a&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">a</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; a&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">a</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; a&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">a</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; a&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">a</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; a&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">b</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; b&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">c</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; c&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">      <span class="k">default</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; default&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="p">}</span>
-</span></span><span class="line"><span class="cl">   <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">func</span> <span style="color:#900;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>   a <span style="color:#000;font-weight:bold">:=</span> <span style="color:#0086b3">make</span>(<span style="color:#000;font-weight:bold">chan</span> <span style="color:#458;font-weight:bold">bool</span>, <span style="color:#099">100</span>)
+</span></span><span style="display:flex;"><span>   b <span style="color:#000;font-weight:bold">:=</span> <span style="color:#0086b3">make</span>(<span style="color:#000;font-weight:bold">chan</span> <span style="color:#458;font-weight:bold">bool</span>, <span style="color:#099">100</span>)
+</span></span><span style="display:flex;"><span>   c <span style="color:#000;font-weight:bold">:=</span> <span style="color:#0086b3">make</span>(<span style="color:#000;font-weight:bold">chan</span> <span style="color:#458;font-weight:bold">bool</span>, <span style="color:#099">100</span>)
+</span></span><span style="display:flex;"><span>   <span style="color:#000;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">:=</span> <span style="color:#099">0</span>; i &lt; <span style="color:#099">10</span>; i<span style="color:#000;font-weight:bold">++</span> {
+</span></span><span style="display:flex;"><span>      a <span style="color:#000;font-weight:bold">&lt;-</span> <span style="color:#000;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>      b <span style="color:#000;font-weight:bold">&lt;-</span> <span style="color:#000;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>      c <span style="color:#000;font-weight:bold">&lt;-</span> <span style="color:#000;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>   }
+</span></span><span style="display:flex;"><span>   <span style="color:#000;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">:=</span> <span style="color:#099">0</span>; i &lt; <span style="color:#099">10</span>; i<span style="color:#000;font-weight:bold">++</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">select</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>a:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; a&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>a:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; a&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>a:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; a&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>a:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; a&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>a:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; a&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>a:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; a&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>a:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; a&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>b:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; b&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>c:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; c&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">default</span>:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; default&#34;</span>)
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>   }
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>输出的结果：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">&lt; c&lt; a&lt; b&lt; a&lt; b&lt; a&lt; a&lt; c&lt; a&lt; a
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>&lt; c&lt; a&lt; b&lt; a&lt; b&lt; a&lt; a&lt; c&lt; a&lt; a
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>当所有channel同时准备就绪时，有80％的机会选择通道a。下面来看一下channel未就绪的情况。</p>
 <h1 id="non-ready-channels">Non-ready channels</h1>
 <p><code>select</code> 运行时，如果没有一个case channel就绪，那么他就会运行<code>default:</code>,如果 <code>select</code>中没有写default，那么他就进入等待状态，如下面这个例子</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">a</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">b</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">   <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">         <span class="nx">a</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">         <span class="nx">b</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">      <span class="p">}</span>
-</span></span><span class="line"><span class="cl">   <span class="p">}()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">   <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="k">select</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">a</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; a&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">b</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;&lt; b&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="p">}</span>
-</span></span><span class="line"><span class="cl">   <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">func</span> <span style="color:#900;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>   a <span style="color:#000;font-weight:bold">:=</span> <span style="color:#0086b3">make</span>(<span style="color:#000;font-weight:bold">chan</span> <span style="color:#458;font-weight:bold">bool</span>, <span style="color:#099">100</span>)
+</span></span><span style="display:flex;"><span>   b <span style="color:#000;font-weight:bold">:=</span> <span style="color:#0086b3">make</span>(<span style="color:#000;font-weight:bold">chan</span> <span style="color:#458;font-weight:bold">bool</span>, <span style="color:#099">100</span>)
+</span></span><span style="display:flex;"><span>   <span style="color:#000;font-weight:bold">go</span> <span style="color:#000;font-weight:bold">func</span>() {
+</span></span><span style="display:flex;"><span>      time.<span style="color:#900;font-weight:bold">Sleep</span>(time.Minute)
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">:=</span> <span style="color:#099">0</span>; i &lt; <span style="color:#099">10</span>; i<span style="color:#000;font-weight:bold">++</span> {
+</span></span><span style="display:flex;"><span>         a <span style="color:#000;font-weight:bold">&lt;-</span> <span style="color:#000;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>         b <span style="color:#000;font-weight:bold">&lt;-</span> <span style="color:#000;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>   }()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#000;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">:=</span> <span style="color:#099">0</span>; i &lt; <span style="color:#099">10</span>; i<span style="color:#000;font-weight:bold">++</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">select</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>a:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; a&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>b:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;&lt; b&#34;</span>)
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>   }
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>上面那个例子中，将在一分钟后打印结果。<code>select</code>阻塞在 channel上。这种情况下，处理<code>select</code>的函数将会订阅所有channel并且等待，下面是一个goroutine#7在select中等待的示例，其中另一个goroutine#4也在等待channel：</p>
-<p><img src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200429225528.png" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200429225528.png" />   
+    </p>
 <p>Goroutine(G7)订阅所有频道并在列表末尾等待。 如果channel发送了一条消息，channel将通知已在等待该消息的另一个Goroutine。一旦收到通知，<code>select </code>将取消订阅所有channel，并且返回到代码运行.</p>
 <p>更多关于channel与等待队列的信息，请查看作者另外一篇文章<a href="https://medium.com/a-journey-with-go/go-buffered-and-unbuffered-channels-29a107c00268"><em>Go: Buffered and Unbuffered Channels</em></a><em>.</em></p>
 <p>上面介绍的逻辑，都是针对于有两个或者以上的活动的channel，实际上如果只有一个活动的channel，go乐意简化select</p>
 <h1 id="simplification">Simplification</h1>
 <p>如果只有一个case 加上一个default，例子：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
 </span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">t</span><span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">NewTicker</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">   <span class="k">for</span>   <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="k">select</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">t</span><span class="p">.</span><span class="nx">C</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;1 second &#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="k">default</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">         <span class="nb">print</span><span class="p">(</span><span class="s">&#34;default branch&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="p">}</span>
-</span></span><span class="line"><span class="cl">   <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">func</span> <span style="color:#900;font-weight:bold">main</span>() {
+</span></span><span style="display:flex;"><span>   t<span style="color:#000;font-weight:bold">:=</span> time.<span style="color:#900;font-weight:bold">NewTicker</span>(time.Second)
+</span></span><span style="display:flex;"><span>   <span style="color:#000;font-weight:bold">for</span>   {
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">select</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>t.C:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;1 second &#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#000;font-weight:bold">default</span>:
+</span></span><span style="display:flex;"><span>         <span style="color:#0086b3">print</span>(<span style="color:#d14">&#34;default branch&#34;</span>)
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>   }
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>这种情况下。Go会以非阻塞模式读取channel的操作替换select语句。如果channel在缓冲区中没有任何值，或者发送方准备发送消息，将会运行default。就像下面这张图</p>
-<p><img src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200429231908.png" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200429231908.png" />   
+    </p>
 <p>如果没有default，则 Go 通过阻塞channel操作重写 select 语句。</p>
 
-    </div>
-
-    <div class="post-copyright">
-  <p class="copyright-item">
-    <span class="item-title">文章作者</span>
-    <span class="item-content">hxzhouh</span>
-  </p>
-  <p class="copyright-item">
-    <span class="item-title">上次更新</span>
-    <span class="item-content">
-        2020-04-29
-        
-    </span>
-  </p>
-  
-  
-</div>
-<footer class="post-footer">
-      <div class="post-tags">
-          <a href="/tags/go/">go</a>
-          <a href="/tags/go-%E5%BA%95%E5%B1%82/">go 底层</a>
-          </div>
-      <nav class="post-nav">
-        <a class="prev" href="/post/arts-0907-0913/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">ARTS 0907-0913</span>
-            <span class="prev-text nav-mobile">上一篇</span>
-          </a>
-        <a class="next" href="/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/">
-            <span class="next-text nav-default">go 怎么做stw</span>
-            <span class="next-text nav-mobile">下一篇</span>
-            <i class="iconfont icon-right"></i>
-          </a>
-      </nav>
-    </footer>
-  </article>
         </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="https://blog.hxzhouh.com">hxzhouh</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/">https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
         
 
-  
-
-  
-
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="social-links">
-      <a href="mailto:hxzhouh@gmail.com" class="iconfont icon-email" title="email"></a>
-      <a href="https://github.com/hxzhouh" class="iconfont icon-github" title="github"></a>
-      <a href="https://www.douban.com/people/zchlwj/" class="iconfont icon-douban" title="douban"></a>
-  <a href="https://blog.hxzhouh.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/">go 怎么做stw</a></li>
+        
+        <li><a href="/post/Golang-%E9%80%9A%E8%BF%87-Consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">Golang 通过 Consul 实现分布式锁</a></li>
+        
+        <li><a href="/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/">leetcode解题笔记-114-原地算法</a></li>
+        
+        <li><a href="/post/go-trace-view-trace-%E6%98%BE%E7%A4%BA%E7%A9%BA%E7%99%BD/">go trace view trace 显示空白</a></li>
+        
+        <li><a href="/post/new%E8%B7%9Fmake-%E7%9A%84%E5%8C%BA%E5%88%AB/">new跟make 的区别</a></li>
+        
+    </ul>
 </div>
 
-<div class="copyright">
-  <span class="power-by">
-    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
-  </span>
-  <span class="division">|</span>
-  <span class="theme-info">
-    主题 - 
-    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
-  </span>
 
-  
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/go' target="_blank">go</a></li>
+                
+                <li><a href='/tags/go-%E5%BA%95%E5%B1%82' target="_blank">go 底层</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
 
-  <span class="copyright-year">
-    &copy; 
-    2020 - 
-    2023<span class="heart"><i class="iconfont icon-heart"></i></span><span>hxzhouh</span>
-  </span>
-</div>
-
-    </footer>
-
-    <div class="back-to-top" id="back-to-top">
-      <i class="iconfont icon-up"></i>
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "hxzhouh/blogcomment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
     </div>
-  </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js" integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js" integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin="anonymous"></script>
-  <script><!-- NOTE: timeago.js uses the language code format like "zh_CN" (underscore and case sensitive) -->
-    var languageCode = "zh-cn".replace(/-/g, '_').replace(/_(.*)/, function ($0, $1) {return $0.replace($1, $1.toUpperCase());});
-    timeago().render(document.querySelectorAll('.timeago'), languageCode);
-    timeago.cancel();  
-  </script>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2023 <a href="https://blog.hxzhouh.com">萝卜的博客 By hxzhouh</a>
+        
+    </div>
+    <br />
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+</footer>
 
 
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 
-<script type="text/javascript" src="/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js"></script>
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
 
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
 
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
 
-
-
-
-
-
+</style>
 <script>
-  function createCopyButton(highlightDiv) {
-    const div = document.createElement("div");
-    div.className = "copy-code";
-    div.innerText = "Copy";
-    div.addEventListener("click", () =>
-      copyCodeToClipboard(div, highlightDiv)
-    );
-    addCopyButtonToDom(div, highlightDiv);
-  }
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
 
-  async function copyCodeToClipboard(button, highlightDiv) {
-    const codeToCopy = highlightDiv.querySelector(":last-child > .chroma > code")
-      .innerText;
-    await navigator.clipboard.writeText(codeToCopy);
-    button.blur();
-    button.innerText = "Copied!";
-    setTimeout(() => button.innerText = "Copy", 2000);
-  }
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
 
-  function addCopyButtonToDom(button, highlightDiv) {
-    highlightDiv.insertBefore(button, highlightDiv.firstChild);
-    const wrapper = document.createElement("div");
-    wrapper.className = "highlight-wrapper";
-    highlightDiv.parentNode.insertBefore(wrapper, highlightDiv);
-    wrapper.appendChild(highlightDiv);
-  }
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
 
-  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if(!isMobile){
-     document.querySelectorAll(".highlight").forEach((highlightDiv) => createCopyButton(highlightDiv));
-  }
-</script>  
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
 
 
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+    <script src='/js/douban.js'></script>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='https://blog.hxzhouh.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://blog.hxzhouh.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/ARTS-2023-38/" title="ARTS-2023-38" target="_blank">ARTS-2023-38</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Linux-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/" title="Linux 远程服务器免密登录" target="_blank">Linux 远程服务器免密登录</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/ARTS-0914-0920/" title="ARTS 0914-0920" target="_blank">ARTS 0914-0920</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/ARTS-0907-0913/" title="ARTS 0907-0913" target="_blank">ARTS 0907-0913</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-PProf/" title="Golang 大杀器之性能剖析 PProf" target="_blank">Golang 大杀器之性能剖析 PProf</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/" title="深度优先算法与广度优先算法" target="_blank">深度优先算法与广度优先算法</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8ARedis-%E9%93%BE%E8%A1%A8/" title="聊聊Redis  链表" target="_blank">聊聊Redis  链表</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/newsletter-202212/" title="Newsletter 202212" target="_blank">Newsletter 202212</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/" title="Go - Ordering in Select Statements" target="_blank">Go - Ordering in Select Statements</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/" title="go 怎么做stw" target="_blank">go 怎么做stw</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://blog.hxzhouh.com/categories/Go/">Go (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/arts/">arts (3)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/Go/">Go (5)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/leetCode/">leetCode (2)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/newsletter/">newsletter (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/redis/">redis (2)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/%E6%8A%80%E6%9C%AF/">技术 (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/">数据结构&amp;算法 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://blog.hxzhouh.com/tags/BFS/">BFS</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/DFS/">DFS</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go/">go</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/arts/">arts</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go/">go</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go-%E5%BA%95%E5%B1%82/">go 底层</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/leetcode/">leetcode</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/leetcode/">leetcode</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/linux/">linux</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/pprof/">pprof</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/redis/">redis</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">最佳实践</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://www.flysnow.org/" title="飞雪无情的博客">飞雪无情的博客</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="https://blog.hxzhouh.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>

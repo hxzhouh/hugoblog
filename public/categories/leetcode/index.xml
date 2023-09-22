@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>leetCode on hxzhouh&#39;s blog</title>
-    <link>https://blog.hxzhouh.com/categories/leetcode/</link>
-    <description>Recent content in leetCode on hxzhouh&#39;s blog</description>
+    <title>leetCode on 萝卜的博客</title>
+    <link>https://blog.hxzhouh.com/categories/leetCode/</link>
+    <description>Recent content in leetCode on 萝卜的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <lastBuildDate>Mon, 06 Apr 2020 23:15:50 +0000</lastBuildDate><atom:link href="https://blog.hxzhouh.com/categories/leetcode/index.xml" rel="self" type="application/rss+xml" />
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 30 Sep 2022 15:14:57 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/categories/leetCode/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>深度优先算法与广度优先算法</title>
       <link>https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</link>
-      <pubDate>Mon, 06 Apr 2020 23:15:50 +0000</pubDate>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
       
       <guid>https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</guid>
-      <description>深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深</description>
+      <description>深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深度遍历树的节点，尽可能深的搜索树的分 支。 当节点v的所有边都己被探寻过，搜索将回溯到发现节点v的那条边的起始节点。 这一过程一直进行到已发现从源</description>
     </item>
     
     <item>
@@ -22,7 +22,7 @@
       <pubDate>Tue, 24 Mar 2020 11:55:43 +0800</pubDate>
       
       <guid>https://blog.hxzhouh.com/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/</guid>
-      <description>In computer science, an in-place algorithm is an algorithm which transforms input using no auxiliary data structure. However a small amount of extra storage space is allowed for auxiliary variables. The input is usually overwritten by the output as the algorithm executes. In-place algorithm updates input sequence only through replacement or swapping of elements. An algorithm which is not in-place is sometimes called not-in-place or out-o</description>
+      <description>In computer science, an in-place algorithm is an algorithm which transforms input using no auxiliary data structure. However a small amount of extra storage space is allowed for auxiliary variables. The input is usually overwritten by the output as the algorithm executes. In-place algorithm updates input sequence only through replacement or swapping of elements. An algorithm which is not in-place is sometimes called not-in-place or out-of-place.——摘自原地算法的维基百科 一句话总结就是: 原地算法不依赖额外的资源或者依赖少数的额外资源，仅依靠输出来覆盖输入的一种算法操作</description>
     </item>
     
   </channel>

@@ -1,241 +1,312 @@
-<!DOCTYPE html>
-<html lang="zh-cn">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>数据结构&amp;算法 · hxzhouh&#39;s blog</title>
-  <meta name="renderer" content="webkit" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
 
-<meta name="theme-color" content="#f8f5ec" />
-<meta name="msapplication-navbutton-color" content="#f8f5ec">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+    <title>数据结构&amp;算法 | 萝卜的博客</title>
+    <meta property="og:title" content="数据结构&amp;算法 - 萝卜的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="golang,go语言,go语言笔记,性能优化">
+    <meta name="description" content="数据结构&amp;算法">
+        
+    <meta name="author" content="hxzhouh">
+    <meta property="og:url" content="https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
 
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <link rel="alternate" type="application/rss+xml" href="https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/index.xml" title="萝卜的博客" />
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-<meta name="author" content="hxzhouh" /><meta name="description" content="Hugo theme even example site." /><meta name="keywords" content="Go, 分布式, 数据库" />
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.118.2 with theme even" />
-
-
-<link rel="canonical" href="https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/" />
-  <link href="https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/index.xml" rel="alternate" type="application/rss+xml" title="hxzhouh&#39;s blog" />
-  <link href="https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/index.xml" rel="feed" type="application/rss+xml" title="hxzhouh&#39;s blog" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/manifest.json">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-
-
-
-<link href="/sass/main.min.2a3766884c406c389d3a4ca20b300e80e434d78f1c08825bbdf164a13f4a4235.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
-
-
-<meta property="og:title" content="数据结构&amp;算法" />
-<meta property="og:description" content="Hugo theme even example site." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/" />
-<meta itemprop="name" content="数据结构&amp;算法">
-<meta itemprop="description" content="Hugo theme even example site."><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="数据结构&amp;算法"/>
-<meta name="twitter:description" content="Hugo theme even example site."/>
-
-<!--[if lte IE 9]>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
-<![endif]-->
-
-<!--[if lt IE 9]>
-  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
-<![endif]-->
-
+    
+    
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/douban.css'>
+    
+        <link rel="stylesheet" href='/css/other.css'>
+    
 </head>
+
 <body>
-  <div id="mobile-navbar" class="mobile-navbar">
-  <div class="mobile-header-logo">
-    <a href="/" class="logo">萝卜</a>
-  </div>
-  <div class="mobile-navbar-icon">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-</div>
-<nav id="mobile-menu" class="mobile-menu slideout-menu">
-  <ul class="mobile-menu-list">
-    <a href="/">
-        <li class="mobile-menu-item">主页</li>
-      </a><a href="/post/">
-        <li class="mobile-menu-item">目录</li>
-      </a><a href="/tags/">
-        <li class="mobile-menu-item">标签</li>
-      </a><a href="/categories/">
-        <li class="mobile-menu-item">分类</li>
-      </a><a href="/categories/arts/">
-        <li class="mobile-menu-item">ARTS</li>
-      </a><a href="/categories/newsletter/">
-        <li class="mobile-menu-item">NewsLetter</li>
-      </a>
-  </ul>
-
-  
-
-
-</nav>
-
-  <div class="container" id="mobile-panel">
-    <header id="header" class="header">
-        <div class="logo-wrapper">
-  <a href="/" class="logo">萝卜</a>
-</div>
-
-
-
-
-
-<nav class="site-navbar">
-  <ul id="menu" class="menu">
-    <li class="menu-item">
-        <a class="menu-item-link" href="/">主页</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/post/">目录</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/tags/">标签</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/categories/">分类</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/categories/arts/">ARTS</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/categories/newsletter/">NewsLetter</a>
-      </li>
-  </ul>
-</nav>
-
-    </header>
-
-    <main id="main" class="main">
-      <div class="content-wrapper">
-        <div id="content" class="content">
-          <section id="archive" class="archive">
-  <div class="archive-title category">
-        <h2 class="archive-name">数据结构&amp;算法</h2>
-      </div>
-
-  <div class="archive-post">
-      <span class="archive-post-time">
-        2020-04-06
-      </span>
-      <span class="archive-post-title">
-        <a href="/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/" class="archive-post-link">
-          深度优先算法与广度优先算法
-        </a>
-      </span>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://blog.hxzhouh.com">
+                        萝卜的博客
+                    </a>
+                
+                <p class="description">专注于后端开发,性能优化以及个人成长</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="" href="https://blog.hxzhouh.com">Home</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/tools/" title="工具">工具</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
     </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <h3 class="archive-title">
+        
+            <span>5</span>
+        
+            <span>3</span>
+        
+            <span>2</span>
+        
+            <span>2</span>
+        
+            <span>1</span>
+        
+            <span>1</span>
+        
+            <span>1</span>
+        
+            <span>1</span>
+        
+        <span class="keyword">数据结构&amp;算法</span>
+        articles
+    </h3>
+    
+
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/" target="_blank">深度优先算法与广度优先算法</a>
+            </h1>
+        </header>
+        
+  <time datetime="2022-09-30T07:14:57Z" class="post-meta meta-date dt-published">
+    2022-09-30
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95' target="_blank">数据结构&amp;算法</a>
+  
+    <a href='/categories/leetCode' target="_blank">leetCode</a>
+  
+</div>
+
+
+        <div class="post-content">
+            深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深度遍历树的节点，尽可能深的搜索树的分 支。 当节点v的所有边都己被探寻过，搜索将回溯到发现节点v的那条边的起始节点。 这一过程一直进行到已发现从源……
+            <p class="readmore"><a href="https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/" target="_blank">Continue reading</a></p>
+        </div>
+    </article>
+    
+
+    
+
+
+
+
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2023 <a href="https://blog.hxzhouh.com">萝卜的博客 By hxzhouh</a>
+        
+    </div>
+    <br />
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+</footer>
+
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+    <script src='/js/douban.js'></script>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='https://blog.hxzhouh.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://blog.hxzhouh.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/ARTS-2023-38/" title="ARTS-2023-38" target="_blank">ARTS-2023-38</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Linux-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/" title="Linux 远程服务器免密登录" target="_blank">Linux 远程服务器免密登录</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/ARTS-0914-0920/" title="ARTS 0914-0920" target="_blank">ARTS 0914-0920</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/ARTS-0907-0913/" title="ARTS 0907-0913" target="_blank">ARTS 0907-0913</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-PProf/" title="Golang 大杀器之性能剖析 PProf" target="_blank">Golang 大杀器之性能剖析 PProf</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/" title="深度优先算法与广度优先算法" target="_blank">深度优先算法与广度优先算法</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8ARedis-%E9%93%BE%E8%A1%A8/" title="聊聊Redis  链表" target="_blank">聊聊Redis  链表</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/newsletter-202212/" title="Newsletter 202212" target="_blank">Newsletter 202212</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/" title="Go - Ordering in Select Statements" target="_blank">Go - Ordering in Select Statements</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/" title="go 怎么做stw" target="_blank">go 怎么做stw</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://blog.hxzhouh.com/categories/Go/">Go (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/arts/">arts (3)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/Go/">Go (5)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/leetCode/">leetCode (2)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/newsletter/">newsletter (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/redis/">redis (2)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/%E6%8A%80%E6%9C%AF/">技术 (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/">数据结构&amp;算法 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://blog.hxzhouh.com/tags/BFS/">BFS</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/DFS/">DFS</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go/">go</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/arts/">arts</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go/">go</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go-%E5%BA%95%E5%B1%82/">go 底层</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/leetcode/">leetcode</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/leetcode/">leetcode</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/linux/">linux</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/pprof/">pprof</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/redis/">redis</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">最佳实践</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://www.flysnow.org/" title="飞雪无情的博客">飞雪无情的博客</a>
+        </li>
+        
+    </ul>
 </section>
 
-<nav class="pagination">
-  
-  
-</nav>
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="https://blog.hxzhouh.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
         </div>
-        
-
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="social-links">
-      <a href="mailto:hxzhouh@gmail.com" class="iconfont icon-email" title="email"></a>
-      <a href="https://github.com/hxzhouh" class="iconfont icon-github" title="github"></a>
-      <a href="https://www.douban.com/people/zchlwj/" class="iconfont icon-douban" title="douban"></a>
-  <a href="https://blog.hxzhouh.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
-</div>
-
-<div class="copyright">
-  <span class="power-by">
-    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
-  </span>
-  <span class="division">|</span>
-  <span class="theme-info">
-    主题 - 
-    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
-  </span>
-
-  
-
-  <span class="copyright-year">
-    &copy; 
-    2020 - 
-    2023<span class="heart"><i class="iconfont icon-heart"></i></span><span>hxzhouh</span>
-  </span>
-</div>
-
-    </footer>
-
-    <div class="back-to-top" id="back-to-top">
-      <i class="iconfont icon-up"></i>
     </div>
-  </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
-
-
-
-<script type="text/javascript" src="/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js"></script>
-
-
-
-
-
-
-
-
-<script>
-  function createCopyButton(highlightDiv) {
-    const div = document.createElement("div");
-    div.className = "copy-code";
-    div.innerText = "Copy";
-    div.addEventListener("click", () =>
-      copyCodeToClipboard(div, highlightDiv)
-    );
-    addCopyButtonToDom(div, highlightDiv);
-  }
-
-  async function copyCodeToClipboard(button, highlightDiv) {
-    const codeToCopy = highlightDiv.querySelector(":last-child > .chroma > code")
-      .innerText;
-    await navigator.clipboard.writeText(codeToCopy);
-    button.blur();
-    button.innerText = "Copied!";
-    setTimeout(() => button.innerText = "Copy", 2000);
-  }
-
-  function addCopyButtonToDom(button, highlightDiv) {
-    highlightDiv.insertBefore(button, highlightDiv.firstChild);
-    const wrapper = document.createElement("div");
-    wrapper.className = "highlight-wrapper";
-    highlightDiv.parentNode.insertBefore(wrapper, highlightDiv);
-    wrapper.appendChild(highlightDiv);
-  }
-
-  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if(!isMobile){
-     document.querySelectorAll(".highlight").forEach((highlightDiv) => createCopyButton(highlightDiv));
-  }
-</script>  
-
-
 </body>
+
 </html>

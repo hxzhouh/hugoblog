@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on hxzhouh&#39;s blog</title>
+    <title>Categories on 萝卜的博客</title>
     <link>https://blog.hxzhouh.com/categories/</link>
-    <description>Recent content in Categories on hxzhouh&#39;s blog</description>
+    <description>Recent content in Categories on 萝卜的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <lastBuildDate>Fri, 22 Sep 2023 10:42:13 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 22 Sep 2023 16:44:12 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>arts</title>
+      <link>https://blog.hxzhouh.com/categories/arts/</link>
+      <pubDate>Fri, 22 Sep 2023 16:44:12 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/categories/arts/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>技术</title>
       <link>https://blog.hxzhouh.com/categories/%E6%8A%80%E6%9C%AF/</link>
@@ -17,56 +26,47 @@
     </item>
     
     <item>
-      <title>newsletter</title>
-      <link>https://blog.hxzhouh.com/categories/newsletter/</link>
-      <pubDate>Fri, 11 Mar 2022 20:48:08 +0800</pubDate>
-      
-      <guid>https://blog.hxzhouh.com/categories/newsletter/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>arts</title>
-      <link>https://blog.hxzhouh.com/categories/arts/</link>
-      <pubDate>Mon, 21 Sep 2020 09:19:00 +0000</pubDate>
-      
-      <guid>https://blog.hxzhouh.com/categories/arts/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Go</title>
-      <link>https://blog.hxzhouh.com/categories/go/</link>
-      <pubDate>Wed, 29 Apr 2020 22:50:50 +0000</pubDate>
+      <link>https://blog.hxzhouh.com/categories/Go/</link>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
       
-      <guid>https://blog.hxzhouh.com/categories/go/</guid>
+      <guid>https://blog.hxzhouh.com/categories/Go/</guid>
       <description></description>
     </item>
     
     <item>
       <title>leetCode</title>
-      <link>https://blog.hxzhouh.com/categories/leetcode/</link>
-      <pubDate>Mon, 06 Apr 2020 23:15:50 +0000</pubDate>
+      <link>https://blog.hxzhouh.com/categories/leetCode/</link>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
       
-      <guid>https://blog.hxzhouh.com/categories/leetcode/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>数据结构&amp;算法</title>
-      <link>https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/</link>
-      <pubDate>Mon, 06 Apr 2020 23:15:50 +0000</pubDate>
-      
-      <guid>https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/</guid>
+      <guid>https://blog.hxzhouh.com/categories/leetCode/</guid>
       <description></description>
     </item>
     
     <item>
       <title>redis</title>
       <link>https://blog.hxzhouh.com/categories/redis/</link>
-      <pubDate>Mon, 16 Mar 2020 22:50:50 +0000</pubDate>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
       
       <guid>https://blog.hxzhouh.com/categories/redis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>数据结构&amp;算法</title>
+      <link>https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>newsletter</title>
+      <link>https://blog.hxzhouh.com/categories/newsletter/</link>
+      <pubDate>Fri, 11 Mar 2022 20:48:08 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/categories/newsletter/</guid>
       <description></description>
     </item>
     
