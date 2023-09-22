@@ -48,16 +48,16 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   weight = 40
   identifier = "categories"
   url = "/categories/"
-[[menu.main]]
-  name = "ARTS"
-  weight = 50
-  identifier = "arts"
-  url = "/categories/arts/"
-[[menu.main]]
-  name = "NewsLetter"
-  weight = 50
-  identifier = "newsletter"
-  url = "/categories/newsletter/"
+#[[menu.main]]
+#  name = "ARTS"
+#  weight = 50
+#  identifier = "arts"
+#  url = "/categories/arts/"
+# [[menu.main]]
+#  name = "NewsLetter"
+#  weight = 50
+#  identifier = "newsletter"
+#  url = "/categories/newsletter/"
 [taxonomies]
   tag = "tags"
   series = "series"
@@ -67,7 +67,6 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   enableCopyCode = true
   version = "4.x"           # Used to give a friendly message when you have an incompatible update
   debug = false             # If true, load `eruda.min.js`. See https://github.com/liriliri/eruda
-
   since = "2020"            # Site creation time          #2020
   # use public git repo url to link lastmod git commit, enableGitInfo should be true.
   # 指定 git 仓库地址，可以生成指向最近更新的 git commit 的链接，需要将 enableGitInfo 设置成 true.
