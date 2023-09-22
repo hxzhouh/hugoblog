@@ -1,127 +1,127 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>萝卜的博客</title>
-    <link>https://hxzhouh.github.io/</link>
-    <description>Recent content on 萝卜的博客</description>
+    <title>hxzhouh&#39;s blog</title>
+    <link>https://blog.hxzhouh.com/</link>
+    <description>Recent content on hxzhouh&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
-    <lastBuildDate>Mon, 21 Sep 2020 09:19:00 +0000</lastBuildDate><atom:link href="https://hxzhouh.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 11 Mar 2022 20:48:08 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Newsletter 202212</title>
+      <link>https://blog.hxzhouh.com/post/newsletter-202212/</link>
+      <pubDate>Fri, 11 Mar 2022 20:48:08 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/newsletter-202212/</guid>
+      <description>本周在干啥 推荐文章 本周啥都没做。。。 最近颓废。</description>
+    </item>
+    
     <item>
       <title>ARTS 0914-0920</title>
-      <link>https://hxzhouh.github.io/post/arts-0914-0920/</link>
+      <link>https://blog.hxzhouh.com/post/arts-0914-0920/</link>
       <pubDate>Mon, 21 Sep 2020 09:19:00 +0000</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/arts-0914-0920/</guid>
+      <guid>https://blog.hxzhouh.com/post/arts-0914-0920/</guid>
       <description>RTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇</description>
     </item>
     
     <item>
       <title>ARTS 0907-0913</title>
-      <link>https://hxzhouh.github.io/post/arts-0907-0913/</link>
+      <link>https://blog.hxzhouh.com/post/arts-0907-0913/</link>
       <pubDate>Sun, 13 Sep 2020 19:19:00 +0000</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/arts-0907-0913/</guid>
+      <guid>https://blog.hxzhouh.com/post/arts-0907-0913/</guid>
       <description>ARTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇</description>
     </item>
     
     <item>
       <title>Go - Ordering in Select Statements</title>
-      <link>https://hxzhouh.github.io/post/go-ordering-in-select-statements/</link>
+      <link>https://blog.hxzhouh.com/post/go-ordering-in-select-statements/</link>
       <pubDate>Wed, 29 Apr 2020 22:50:50 +0000</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/go-ordering-in-select-statements/</guid>
+      <guid>https://blog.hxzhouh.com/post/go-ordering-in-select-statements/</guid>
       <description>原文链接 Vincent Blanchon 本文基于 go 1.14 select 允许在一个goroutine中管理多个channel。但是，当所有channel同时就绪的时候，go需要在其中选择</description>
     </item>
     
     <item>
       <title>go 怎么做stw</title>
-      <link>https://hxzhouh.github.io/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/</link>
+      <link>https://blog.hxzhouh.com/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/</link>
       <pubDate>Tue, 28 Apr 2020 21:19:00 +0000</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/</guid>
+      <guid>https://blog.hxzhouh.com/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/</guid>
       <description>原文链接: Go: How Does Go Stop the World? : Author : Vincent Blanchon 本文基于 go 1.13 在垃圾回收算法中，Stop The Word（STW）是一个很重要的概念，他会中断程序运行，添加写屏障</description>
     </item>
     
     <item>
       <title>深度优先算法与广度优先算法</title>
-      <link>https://hxzhouh.github.io/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</link>
+      <link>https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</link>
       <pubDate>Mon, 06 Apr 2020 23:15:50 +0000</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</guid>
+      <guid>https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/</guid>
       <description>深度优先算法 （Depth-First-Search） 深度优先搜索算法（Depth-First-Search），是搜索算法的一种。它沿着树的深</description>
     </item>
     
     <item>
       <title>go pprof 最佳实践</title>
-      <link>https://hxzhouh.github.io/post/golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-pprof/</link>
+      <link>https://blog.hxzhouh.com/post/golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-pprof/</link>
       <pubDate>Fri, 03 Apr 2020 11:55:43 +0000</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-pprof/</guid>
+      <guid>https://blog.hxzhouh.com/post/golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-pprof/</guid>
       <description>前言 写了几吨代码，实现了几百个接口。功能测试也通过了，终于成功的部署上线了 结果，性能不佳，什么鬼？😭 想做性能分析 PProf 想要进行性能优化，首先瞩目</description>
     </item>
     
     <item>
       <title>Golang 通过 Consul 实现分布式锁</title>
-      <link>https://hxzhouh.github.io/post/golang-%E9%80%9A%E8%BF%87-consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</link>
+      <link>https://blog.hxzhouh.com/post/golang-%E9%80%9A%E8%BF%87-consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</link>
       <pubDate>Tue, 24 Mar 2020 11:55:43 +0000</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/golang-%E9%80%9A%E8%BF%87-consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</guid>
+      <guid>https://blog.hxzhouh.com/post/golang-%E9%80%9A%E8%BF%87-consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</guid>
       <description>Consul 是什么 Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查,</description>
     </item>
     
     <item>
       <title>leetcode解题笔记-114-原地算法</title>
-      <link>https://hxzhouh.github.io/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/</link>
+      <link>https://blog.hxzhouh.com/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/</link>
       <pubDate>Tue, 24 Mar 2020 11:55:43 +0800</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/</guid>
+      <guid>https://blog.hxzhouh.com/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/</guid>
       <description>In computer science, an in-place algorithm is an algorithm which transforms input using no auxiliary data structure. However a small amount of extra storage space is allowed for auxiliary variables. The input is usually overwritten by the output as the algorithm executes. In-place algorithm updates input sequence only through replacement or swapping of elements. An algorithm which is not in-place is sometimes called not-in-place or out-o</description>
     </item>
     
     <item>
       <title>go trace view trace 显示空白</title>
-      <link>https://hxzhouh.github.io/post/go-trace-view-trace-%E6%98%BE%E7%A4%BA%E7%A9%BA%E7%99%BD/</link>
+      <link>https://blog.hxzhouh.com/post/go-trace-view-trace-%E6%98%BE%E7%A4%BA%E7%A9%BA%E7%99%BD/</link>
       <pubDate>Sat, 21 Mar 2020 11:55:43 +0000</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/go-trace-view-trace-%E6%98%BE%E7%A4%BA%E7%A9%BA%E7%99%BD/</guid>
+      <guid>https://blog.hxzhouh.com/post/go-trace-view-trace-%E6%98%BE%E7%A4%BA%E7%A9%BA%E7%99%BD/</guid>
       <description>go trace 用来跟踪 goroutines运行情况,跟pprof配合使用，可以起到事半功倍的效果。但是，go trace 的view trace 在chrome下一片空白。 原</description>
     </item>
     
     <item>
-      <title>test-img</title>
-      <link>https://hxzhouh.github.io/post/test-img/</link>
-      <pubDate>Sat, 21 Mar 2020 11:55:43 +0800</pubDate>
-      
-      <guid>https://hxzhouh.github.io/post/test-img/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>理解 Go make 和 new 的区别</title>
-      <link>https://hxzhouh.github.io/post/new%E8%B7%9Fmake-%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
+      <link>https://blog.hxzhouh.com/post/new%E8%B7%9Fmake-%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
       <pubDate>Sat, 21 Mar 2020 11:55:43 +0800</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/new%E8%B7%9Fmake-%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
+      <guid>https://blog.hxzhouh.com/post/new%E8%B7%9Fmake-%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
       <description>new 和 make 都可以用来分配空间，初始化类型，但是它们确有不同。 new(T) 返回的是 T 的指针 new(T) 为一个 T 类型新值分配空间并将此空间初始化为 T 的零值，返回的是新值</description>
     </item>
     
     <item>
       <title>聊聊redis的链表</title>
-      <link>https://hxzhouh.github.io/post/%E8%81%8A%E8%81%8Aredis-%E9%93%BE%E8%A1%A8/</link>
+      <link>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-%E9%93%BE%E8%A1%A8/</link>
       <pubDate>Mon, 16 Mar 2020 22:50:50 +0000</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/%E8%81%8A%E8%81%8Aredis-%E9%93%BE%E8%A1%A8/</guid>
+      <guid>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-%E9%93%BE%E8%A1%A8/</guid>
       <description>&lt;p&gt;链表提供了高效的节点重排能力， 以及顺序性的节点访问方式， 并且可以通过增删节点来灵活地调整链表的长度。&lt;/p&gt;
 &lt;p&gt;链表在 Redis 中的应用非常广泛， 比如列表键的底层实现之一就是链表： 当一个列表键包含了数量比较多的元素， 又或者列表中包含的元素都是比较长的字符串时， Redis 就会使用链表作为列表键的底层实现。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>聊聊Redis SDS</title>
-      <link>https://hxzhouh.github.io/post/%E8%81%8A%E8%81%8Aredis-sds/</link>
+      <link>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/</link>
       <pubDate>Sat, 16 Nov 2019 23:39:28 +0000</pubDate>
       
-      <guid>https://hxzhouh.github.io/post/%E8%81%8A%E8%81%8Aredis-sds/</guid>
+      <guid>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/</guid>
       <description>&lt;p&gt;SDS全拼为：&lt;code&gt;simple dynamic string&lt;/code&gt;，解释为：简单动态字符串&lt;/p&gt;
 &lt;p&gt;​    C语言字符串使用长度为n+1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&amp;rsquo;\0&amp;rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。&lt;/p&gt;</description>
     </item>

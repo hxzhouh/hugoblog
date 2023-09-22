@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>聊聊Redis SDS - 萝卜的博客</title>
+  <title>聊聊Redis SDS - hxzhouh&#39;s blog</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -25,10 +25,10 @@
 
 
 
-<meta name="generator" content="Hugo 0.94.0-DEV with theme even" />
+<meta name="generator" content="Hugo 0.118.2 with theme even" />
 
 
-<link rel="canonical" href="https://hxzhouh.github.io/post/%E8%81%8A%E8%81%8Aredis-sds/" />
+<link rel="canonical" href="https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -37,7 +37,7 @@
 
 
 
-<link href="/sass/main.min.651e6917abb0239242daa570c2bec9867267bbcd83646da5a850afe573347b44.css" rel="stylesheet">
+<link href="/sass/main.min.2a3766884c406c389d3a4ca20b300e80e434d78f1c08825bbdf164a13f4a4235.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -45,10 +45,9 @@
 <meta property="og:description" content="SDS全拼为：simple dynamic string，解释为：简单动态字符串
 ​    C语言字符串使用长度为n&#43;1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&rsquo;\0&rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://hxzhouh.github.io/post/%E8%81%8A%E8%81%8Aredis-sds/" /><meta property="article:section" content="post" />
+<meta property="og:url" content="https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2019-11-16T23:39:28+00:00" />
 <meta property="article:modified_time" content="2019-11-16T23:39:28+00:00" />
-
 <meta itemprop="name" content="聊聊Redis SDS">
 <meta itemprop="description" content="SDS全拼为：simple dynamic string，解释为：简单动态字符串
 ​    C语言字符串使用长度为n&#43;1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&rsquo;\0&rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。"><meta itemprop="datePublished" content="2019-11-16T23:39:28+00:00" />
@@ -92,14 +91,25 @@
         <li class="mobile-menu-item">分类</li>
       </a><a href="/categories/arts/">
         <li class="mobile-menu-item">ARTS</li>
+      </a><a href="/categories/newsletter/">
+        <li class="mobile-menu-item">NewsLetter</li>
       </a>
   </ul>
+
+  
+
+
 </nav>
+
   <div class="container" id="mobile-panel">
     <header id="header" class="header">
         <div class="logo-wrapper">
   <a href="/" class="logo">萝卜</a>
 </div>
+
+
+
+
 
 <nav class="site-navbar">
   <ul id="menu" class="menu">
@@ -113,9 +123,12 @@
         <a class="menu-item-link" href="/categories/">分类</a>
       </li><li class="menu-item">
         <a class="menu-item-link" href="/categories/arts/">ARTS</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/newsletter/">NewsLetter</a>
       </li>
   </ul>
 </nav>
+
     </header>
 
     <main id="main" class="main">
@@ -131,6 +144,8 @@
         <div class="post-category">
             <a href="/categories/redis/"> redis </a>
             </div>
+          <span class="more-meta"> 约 2755 字 </span>
+          <span class="more-meta"> 预计阅读 6 分钟 </span>
         
       </div>
     </header>
@@ -264,7 +279,7 @@
       <a href="mailto:hxzhouh@gmail.com" class="iconfont icon-email" title="email"></a>
       <a href="https://github.com/hxzhouh" class="iconfont icon-github" title="github"></a>
       <a href="https://www.douban.com/people/zchlwj/" class="iconfont icon-douban" title="douban"></a>
-  <a href="https://hxzhouh.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+  <a href="https://blog.hxzhouh.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
 </div>
 
 <div class="copyright">
@@ -282,13 +297,10 @@
   <span class="copyright-year">
     &copy; 
     2020 - 
-    2022
-    <span class="heart">
-      <i class="iconfont icon-heart"></i>
-    </span>
-    <span class="author">hxzhouh</span>
+    2023<span class="heart"><i class="iconfont icon-heart"></i></span><span>hxzhouh</span>
   </span>
 </div>
+
     </footer>
 
     <div class="back-to-top" id="back-to-top">
@@ -302,20 +314,55 @@
     <script src="https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js" integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js" integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin="anonymous"></script>
   <script><!-- NOTE: timeago.js uses the language code format like "zh_CN" (underscore and case sensitive) -->
-    var languageCode = "en".replace(/-/g, '_').replace(/_(.*)/, function ($0, $1) {return $0.replace($1, $1.toUpperCase());});
+    var languageCode = "zh-cn".replace(/-/g, '_').replace(/_(.*)/, function ($0, $1) {return $0.replace($1, $1.toUpperCase());});
     timeago().render(document.querySelectorAll('.timeago'), languageCode);
     timeago.cancel();  
   </script>
 
 
 
-<script type="text/javascript" src="/js/main.min.30dad356188cdaba5047112eaa8bf5e85cb14ae7e803337403591fce94a531a0.js"></script>
+<script type="text/javascript" src="/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js"></script>
 
 
 
 
 
 
+
+
+<script>
+  function createCopyButton(highlightDiv) {
+    const div = document.createElement("div");
+    div.className = "copy-code";
+    div.innerText = "Copy";
+    div.addEventListener("click", () =>
+      copyCodeToClipboard(div, highlightDiv)
+    );
+    addCopyButtonToDom(div, highlightDiv);
+  }
+
+  async function copyCodeToClipboard(button, highlightDiv) {
+    const codeToCopy = highlightDiv.querySelector(":last-child > .chroma > code")
+      .innerText;
+    await navigator.clipboard.writeText(codeToCopy);
+    button.blur();
+    button.innerText = "Copied!";
+    setTimeout(() => button.innerText = "Copy", 2000);
+  }
+
+  function addCopyButtonToDom(button, highlightDiv) {
+    highlightDiv.insertBefore(button, highlightDiv.firstChild);
+    const wrapper = document.createElement("div");
+    wrapper.className = "highlight-wrapper";
+    highlightDiv.parentNode.insertBefore(wrapper, highlightDiv);
+    wrapper.appendChild(highlightDiv);
+  }
+
+  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if(!isMobile){
+     document.querySelectorAll(".highlight").forEach((highlightDiv) => createCopyButton(highlightDiv));
+  }
+</script>  
 
 
 </body>
