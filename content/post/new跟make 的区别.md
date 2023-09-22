@@ -1,9 +1,11 @@
 ---
-title: "理解 Go make 和 new 的区别"
+title: new跟make 的区别
 date: 2020-03-21T11:55:43+08:00
 categories: ["go"]
 tags: ["Go"]
+lastmod: 2023-09-22T14:46:21+08:00
 ---
+# new跟make 的区别
 
 > new 和 make 都可以用来分配空间，初始化类型，但是它们确有不同。
 
