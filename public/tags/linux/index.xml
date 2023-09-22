@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>linux on hxzhouh&#39;s blog</title>
+    <link>https://blog.hxzhouh.com/tags/linux/</link>
+    <description>Recent content in linux on hxzhouh&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 22 Sep 2023 10:42:13 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux 远程服务器免密登录</title>
+      <link>https://blog.hxzhouh.com/post/linux-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/</link>
+      <pubDate>Fri, 22 Sep 2023 10:42:13 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/linux-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/</guid>
+      <description>免密登录的原理：通过密钥认证登录，首先在自己的服务器上生成公钥和私钥，其次将公钥上传到远程服务中，在于远程服务器建立连接通信时，远程服务器首</description>
+    </item>
+    
+  </channel>
+</rss>
