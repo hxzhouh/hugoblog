@@ -1,8 +1,9 @@
 ---
-title: 聊聊Redis SDS
+title: 聊聊redis sds
 tags: ["redis"]
-date: 2019-11-16 23:39:28
+date: 2022-09-30T15:14:57+08:00
 categories: ["redis"]
+lastmod: 2023-09-24T08:25:52+08:00
 ---
 
 SDS全拼为：`simple dynamic string`，解释为：简单动态字符串
