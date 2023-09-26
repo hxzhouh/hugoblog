@@ -4,6 +4,7 @@ tags: ["redis"]
 date: 2022-09-30T15:14:57+08:00
 categories: ["redis"]
 lastmod: 2023-09-24T08:25:52+08:00
+createAt: 2022-09-30 15:14:57
 ---
 
 SDS全拼为：`simple dynamic string`，解释为：简单动态字符串
