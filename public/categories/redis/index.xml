@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>redis on 萝卜的博客</title>
+    <title>redis on 九又四分之三站台</title>
     <link>https://blog.hxzhouh.com/categories/redis/</link>
-    <description>Recent content in redis on 萝卜的博客</description>
+    <description>Recent content in redis on 九又四分之三站台</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Fri, 30 Sep 2022 15:14:57 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/categories/redis/index.xml" rel="self" type="application/rss+xml" />
@@ -18,9 +18,9 @@
     </item>
     
     <item>
-      <title>聊聊Redis SDS</title>
+      <title>聊聊redis sds</title>
       <link>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/</link>
-      <pubDate>Sat, 16 Nov 2019 23:39:28 +0000</pubDate>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
       
       <guid>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/</guid>
       <description>&lt;p&gt;SDS全拼为：&lt;code&gt;simple dynamic string&lt;/code&gt;，解释为：简单动态字符串&lt;/p&gt;

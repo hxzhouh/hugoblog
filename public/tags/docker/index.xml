@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>docker on 九又四分之三站台</title>
+    <link>https://blog.hxzhouh.com/tags/docker/</link>
+    <description>Recent content in docker on 九又四分之三站台</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Sat, 23 Sep 2023 21:43:28 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>在VPS上搭建vaultwarden</title>
+      <link>https://blog.hxzhouh.com/post/%E5%9C%A8VPS%E4%B8%8A%E6%90%AD%E5%BB%BAvaultwarden/</link>
+      <pubDate>Sat, 23 Sep 2023 21:43:28 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/%E5%9C%A8VPS%E4%B8%8A%E6%90%AD%E5%BB%BAvaultwarden/</guid>
+      <description>在VPS上搭建vaultwarden 之前一直在寻找一个支持跨平台的密码管理工具，先后尝试了 1Password 和 LastPass，迫于贫穷，切换到了开源的 Bitwarden 支持自托管服务端,但是 Bitwarden 对性能要求比较高， 退而求其次，用它的另一个实现 Vaultwarden（原名 Bitwarden_rs） Vaultwarden 完美兼容Bitw</description>
+    </item>
+    
+  </channel>
+</rss>

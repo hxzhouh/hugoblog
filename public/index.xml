@@ -1,19 +1,55 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>萝卜的博客</title>
+    <title>九又四分之三站台</title>
     <link>https://blog.hxzhouh.com/</link>
-    <description>Recent content on 萝卜的博客</description>
+    <description>Recent content on 九又四分之三站台</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Fri, 22 Sep 2023 16:44:12 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 26 Sep 2023 09:37:22 +0000</lastBuildDate><atom:link href="https://blog.hxzhouh.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>template-arts</title>
+      <link>https://blog.hxzhouh.com/post/arts/ARTS-2023-39/</link>
+      <pubDate>Tue, 26 Sep 2023 09:37:22 +0000</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/arts/ARTS-2023-39/</guid>
+      <description>ARTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇英文文章， Technique/Tips 是分享一个小技术， Share 是分享一个观点。 算法 #算法 #leetcode Review #好文 #阅读 Technique/Tips #工具 在本地生成测试证书。 1 2 3 4 5 6 7 8 # 首先，生成一个RSA</description>
+    </item>
+    
+    <item>
+      <title>Obsidian 最佳实践</title>
+      <link>https://blog.hxzhouh.com/post/Obsidian-%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Sun, 24 Sep 2023 08:26:01 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/Obsidian-%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</guid>
+      <description>Obsidian 最佳实践 #obsidian https://github.com/Kenshin/simpread/discussions/3807</description>
+    </item>
+    
+    <item>
+      <title>在VPS上搭建vaultwarden</title>
+      <link>https://blog.hxzhouh.com/post/%E5%9C%A8VPS%E4%B8%8A%E6%90%AD%E5%BB%BAvaultwarden/</link>
+      <pubDate>Sat, 23 Sep 2023 21:43:28 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/%E5%9C%A8VPS%E4%B8%8A%E6%90%AD%E5%BB%BAvaultwarden/</guid>
+      <description>在VPS上搭建vaultwarden 之前一直在寻找一个支持跨平台的密码管理工具，先后尝试了 1Password 和 LastPass，迫于贫穷，切换到了开源的 Bitwarden 支持自托管服务端,但是 Bitwarden 对性能要求比较高， 退而求其次，用它的另一个实现 Vaultwarden（原名 Bitwarden_rs） Vaultwarden 完美兼容Bitw</description>
+    </item>
+    
     <item>
       <title>ARTS-2023-38</title>
-      <link>https://blog.hxzhouh.com/post/ARTS-2023-38/</link>
+      <link>https://blog.hxzhouh.com/post/arts/ARTS-2023-38/</link>
       <pubDate>Fri, 22 Sep 2023 16:44:12 +0800</pubDate>
       
-      <guid>https://blog.hxzhouh.com/post/ARTS-2023-38/</guid>
-      <description>ARTS-2023-38 ARTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇英文文章， Technique/Tips 是分享一个小技术， Share 是分享一个观点。 {{title}} [[Algorithm]] leetCode 122 用[[动态规划]] 来做这个题目 1 2 3 4 5 6 7 8 9 10 11 12 13 func maxProfit(prices []int) (ans int) { for i := 1; i &amp;lt; len(prices);</description>
+      <guid>https://blog.hxzhouh.com/post/arts/ARTS-2023-38/</guid>
+      <description>ARTS-2023-38 ARTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇英文文章， Technique/Tips 是分享一个小技术， Share 是分享一个观点。 算法 #算法 #leetcode leetCode 122 用[[动态规划]] 来做这个题目 1 2 3 4 5 6 7 8 9 10 11 12 13 func maxProfit(prices []int) (ans int) { for i :=</description>
+    </item>
+    
+    <item>
+      <title>test-time</title>
+      <link>https://blog.hxzhouh.com/post/test-time/</link>
+      <pubDate>Fri, 22 Sep 2023 11:56:25 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/test-time/</guid>
+      <description>template-blog 点击阅读前文前, 首页能看到的文章的简短描述</description>
     </item>
     
     <item>
@@ -26,20 +62,29 @@
     </item>
     
     <item>
+      <title>聊聊我的博客写作方式</title>
+      <link>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8A%E6%88%91%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%99%E4%BD%9C%E6%96%B9%E5%BC%8F/</link>
+      <pubDate>Thu, 21 Sep 2023 22:30:55 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8A%E6%88%91%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%99%E4%BD%9C%E6%96%B9%E5%BC%8F/</guid>
+      <description>聊聊我的博客写作方式 点击阅读前文前, 首页能看到的文章的简短描述 博客站点 使用 hugo 免费托管在Cloudflare 图床 写作工具使用 Obsidian [[Obsidian 最佳实践]]</description>
+    </item>
+    
+    <item>
       <title>ARTS 0914-0920</title>
-      <link>https://blog.hxzhouh.com/post/ARTS-0914-0920/</link>
+      <link>https://blog.hxzhouh.com/post/arts/ARTS-0914-0920/</link>
       <pubDate>Thu, 21 Sep 2023 21:47:34 +0800</pubDate>
       
-      <guid>https://blog.hxzhouh.com/post/ARTS-0914-0920/</guid>
+      <guid>https://blog.hxzhouh.com/post/arts/ARTS-0914-0920/</guid>
       <description>RTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇英文文章， Technique/Tips 是分享一个小技术， Share 是分享一个观点。 Algorithm: leetCode: 82 83 Review https://blog.pixielabs.ai/blog/ebpf-function-tracing/post/</description>
     </item>
     
     <item>
       <title>ARTS 0907-0913</title>
-      <link>https://blog.hxzhouh.com/post/ARTS-0907-0913/</link>
+      <link>https://blog.hxzhouh.com/post/arts/ARTS-0907-0913/</link>
       <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
       
-      <guid>https://blog.hxzhouh.com/post/ARTS-0907-0913/</guid>
+      <guid>https://blog.hxzhouh.com/post/arts/ARTS-0907-0913/</guid>
       <description>ARTS 是陈浩（网名左耳朵耗子）在极客时间专栏里发起的一个活动，目的是通过分享的方式来坚持学习。 每人每周写一个 ARTS： Algorithm 是一道算法题， Review 是读一篇英文文章， Technique/Tips 是分享一个小技术， Share 是分享一个观点。 Algorithm: leetcode 206 leetcode 141 leetcode 19 Review Kubernetes如何改变美团的云基础设施？</description>
     </item>
     
@@ -69,6 +114,25 @@
       <guid>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8ARedis-%E9%93%BE%E8%A1%A8/</guid>
       <description>&lt;p&gt;链表提供了高效的节点重排能力， 以及顺序性的节点访问方式， 并且可以通过增删节点来灵活地调整链表的长度。&lt;/p&gt;
 &lt;p&gt;链表在 Redis 中的应用非常广泛， 比如列表键的底层实现之一就是链表： 当一个列表键包含了数量比较多的元素， 又或者列表中包含的元素都是比较长的字符串时， Redis 就会使用链表作为列表键的底层实现。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>聊聊redis sds</title>
+      <link>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/</link>
+      <pubDate>Fri, 30 Sep 2022 15:14:57 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/</guid>
+      <description>&lt;p&gt;SDS全拼为：&lt;code&gt;simple dynamic string&lt;/code&gt;，解释为：简单动态字符串&lt;/p&gt;
+&lt;p&gt;​    C语言字符串使用长度为n+1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&amp;rsquo;\0&amp;rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Newsletter 202213</title>
+      <link>https://blog.hxzhouh.com/post/newsletter-202213/</link>
+      <pubDate>Tue, 15 Mar 2022 22:29:33 +0800</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/newsletter-202213/</guid>
+      <description>Redis: 本周做了啥 极客时间 《许式伟的架构课》 主要是看了架构师思维偏吧，看不太懂。基础还得补。 《Redis 源码剖析与实战》 刚开坑，看了第一部，接着熟悉redis。</description>
     </item>
     
     <item>
@@ -135,22 +199,21 @@
     </item>
     
     <item>
-      <title>聊聊Redis SDS</title>
-      <link>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/</link>
-      <pubDate>Sat, 16 Nov 2019 23:39:28 +0000</pubDate>
-      
-      <guid>https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/</guid>
-      <description>&lt;p&gt;SDS全拼为：&lt;code&gt;simple dynamic string&lt;/code&gt;，解释为：简单动态字符串&lt;/p&gt;
-&lt;p&gt;​    C语言字符串使用长度为n+1的字符数组来表示长度为n的字符串，并且字符数组的最后一个元素总是空字符&amp;rsquo;\0&amp;rsquo;，因为这种字符串表示方式不能满足Redis对字符串在安全性、效率以及功能方面的要求，所以Redis自己构建了SDS，用于满足其需求。在Redis里，C语言字符串只用于一些无须对字符串值进行修改的地方，比如：日志。在Redis中，包含字符串值的键值对都是使用SDS实现的，除此之外，SDS还被用于AOF缓冲区、客户端状态的输入缓冲区。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
       <title>关于我</title>
       <link>https://blog.hxzhouh.com/about/</link>
       <pubDate>Tue, 10 Mar 2015 00:13:27 +0000</pubDate>
       
       <guid>https://blog.hxzhouh.com/about/</guid>
-      <description>我是萝卜</description>
+      <description>我是萝卜 一个不算厉害的后端工程师，希望能够在这里记录一些自己的学习笔记，也希望能够帮助到一些人。 你可以在这了找到我 Github twitter telegram 正在看的书 《深入理解计算机系统》</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://blog.hxzhouh.com/post/%E4%B8%BA%E4%BB%80%E4%B9%88Https-%E6%80%A7%E8%83%BD%E8%BF%99%E4%B9%88%E5%B7%AE/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/%E4%B8%BA%E4%BB%80%E4%B9%88Https-%E6%80%A7%E8%83%BD%E8%BF%99%E4%B9%88%E5%B7%AE/</guid>
+      <description>HTTP 协议（Hypertext Transfer Protocol）已经成为互联网上最常用的应用层协议，然而其本身只是用于传输超文本的网络协议，不会提供任何安全上的保证，使用明文在互联网上传输数据包使得窃听和中间人攻击成为可能，通过 HTTP 传输密码其实与在互联网上裸奔也差不多。 HTTPS 是对 HTTP 协议的扩展，我们可以使</description>
     </item>
     
     <item>
