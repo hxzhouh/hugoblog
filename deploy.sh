@@ -16,7 +16,7 @@ set -e
 #hugo -t even # if using a theme, replace with `hugo -t <YOURTHEME>`
 # 进入打包文件夹
 git pull 
-mv content/post/atrs/* content/post/
+mv -f content/post/arts/ARTS*.md content/post/
 git add -A
 # Commit changes.
 msg="building site `date`"
