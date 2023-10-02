@@ -16,6 +16,7 @@ set -e
 #hugo -t even # if using a theme, replace with `hugo -t <YOURTHEME>`
 # 进入打包文件夹
 git pull 
+mv content/post/atrs/* content/post/
 git add -A
 # Commit changes.
 msg="building site `date`"
@@ -23,6 +24,8 @@ if [ $# -eq 1 ]
   then msg="$1"
 fi
 git commit -m "$msg"
-
 # 推送到github
 git push origin 
+
+mv  -f content/post/ARTS*.md content/post/arts/
+

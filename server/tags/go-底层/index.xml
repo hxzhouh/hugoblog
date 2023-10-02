@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>go 底层 on 萝卜的博客</title>
+    <link>https://blog.hxzhouh.com/tags/go-%E5%BA%95%E5%B1%82/</link>
+    <description>Recent content in go 底层 on 萝卜的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 29 Apr 2020 22:50:50 +0000</lastBuildDate><atom:link href="https://blog.hxzhouh.com/tags/go-%E5%BA%95%E5%B1%82/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go - Ordering in Select Statements</title>
+      <link>https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/</link>
+      <pubDate>Wed, 29 Apr 2020 22:50:50 +0000</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/</guid>
+      <description>原文链接 Vincent Blanchon 本文基于 go 1.14 select 允许在一个goroutine中管理多个channel。但是，当所有channel同时就绪的时候，go需要在其中选择一个执行。go还需要处理没有channel就绪的情况，我们先从就绪的channel开始。 Order select 不会按照任何规则或者优先级选择到达的channe</description>
+    </item>
+    
+  </channel>
+</rss>

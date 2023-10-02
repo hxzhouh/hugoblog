@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Golang 通过 Consul 实现分布式锁 | 萝卜的博客</title>
+    <meta property="og:title" content="Golang 通过 Consul 实现分布式锁 - 萝卜的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2020-03-24T11:55:43&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2020-03-24T11:55:43&#43;08:00'>
+        
+    <meta name="Keywords" content="golang,go语言,go语言笔记,性能优化">
+    <meta name="description" content="Golang 通过 Consul 实现分布式锁">
+        
+    <meta name="author" content="hxzhouh">
+    <meta property="og:url" content="https://blog.hxzhouh.com/post/Golang-%E9%80%9A%E8%BF%87-Consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/douban.css'>
+    
+        <link rel="stylesheet" href='/css/other.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://blog.hxzhouh.com">
+                        萝卜的博客
+                    </a>
+                
+                <p class="description">专注于后端开发,性能优化以及个人成长</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://blog.hxzhouh.com">Home</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/archives/arts" title="arts">arts</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">Golang 通过 Consul 实现分布式锁</h1>
+        </header>
+        
+  <time datetime="2020-03-24T11:55:43Z" class="post-meta meta-date dt-published">
+    2020-03-24
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/go' target="_blank">go</a>
+  
+</div>
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="post-content">
+            <h1 id="consul-是什么">Consul 是什么</h1>
+<p>Consul 是一个支持多数据中心分布式高可用的服务发现和配置共享的服务软件,由 HashiCorp 公司用 Go 语言开发, 基于 Mozilla Public License 2.0 的协议进行开源. Consul 支持健康检查,并允许 HTTP 和 DNS 协议调用 API 存储键值对.<br>
+命令行超级好用的虚拟机管理软件 vgrant 也是 HashiCorp 公司开发的产品.<br>
+一致性协议采用 Raft 算法,用来保证服务的高可用. 使用 GOSSIP 协议管理成员和广播消息, 并且支持 ACL 访问控制.</p>
+<h1 id="consul-的使用场景">Consul 的使用场景</h1>
+<ul>
+<li>docker 实例的注册与配置共享</li>
+<li>coreos 实例的注册与配置共享</li>
+<li>vitess 集群</li>
+<li>SaaS 应用的配置共享</li>
+<li>与 confd 服务集成，动态生成 nginx 和 haproxy 配置文件</li>
+</ul>
+<h1 id="consul-的优势">Consul 的优势</h1>
+<ul>
+<li>使用 Raft 算法来保证一致性, 比复杂的 Paxos 算法更直接. 相比较而言, zookeeper 采用的是 Paxos, 而 etcd 使用的则是 Raft.</li>
+<li>支持多数据中心，内外网的服务采用不同的端口进行监听。 多数据中心集群可以避免单数据中心的单点故障,而其部署则需要考虑网络延迟, 分片等情况等. zookeeper 和 etcd 均不提供多数据中心功能的支持.</li>
+<li>支持健康检查. etcd 不提供此功能.</li>
+<li>支持 http 和 dns 协议接口. zookeeper 的集成较为复杂, etcd 只支持 http 协议.</li>
+<li>官方提供web管理界面, etcd 无此功能.<br>
+综合比较, Consul 作为服务注册和配置管理的新星, 比较值得关注和研究.</li>
+</ul>
+<h1 id="consul-的角色">Consul 的角色</h1>
+<p>client: 客户端, 无状态, 将 HTTP 和 DNS 接口请求转发给局域网内的服务端集群.<br>
+server: 服务端, 保存配置信息, 高可用集群, 在局域网内与本地客户端通讯, 通过广域网与其他数据中心通讯. 每个数据中心的 server 数量推荐为 3 个或是 5 个.</p>
+<h1 id="什么是分布式锁">什么是分布式锁</h1>
+<p><strong>分布式锁</strong>，是控制<a href="https://zh.wikipedia.org/w/index.php?title=%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F&amp;action=edit&amp;redlink=1" title="分布式系统（页面不存在）">分布式系统</a>之间同步访问共享<a href="https://zh.wikipedia.org/wiki/%E8%B5%84%E6%BA%90" title="资源">资源</a>的一种方式。在分布式系统中，常常需要协调他们的动作。如果不同的系统或是同一个系统的不同主机之间共享了一个或一组资源，那么访问这些资源的时候，往往需要<a href="https://zh.wikipedia.org/wiki/%E4%BA%92%E6%96%A5" title="互斥">互斥</a>来防止彼此干扰来保证一致性，在这种情况下，便需要使用到分布式锁。<br>
+目前几乎很多大型网站及应用都是分布式部署的，分布式场景中的数据一致性问题一直是一个比较重要的话题。分布式的CAP理论告诉我们“任何一个分布式系统都无法同时满足一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance），最多只能同时满足两项。”所以，很多系统在设计之初就要对这三者做出取舍。在互联网领域的绝大多数的场景中，都需要牺牲强一致性来换取系统的高可用性，系统往往只需要保证“最终一致性”，只要这个最终时间是在用户可以接受的范围内即可。<br>
+在很多场景中，我们为了保证数据的最终一致性，需要很多的技术方案来支持，比如分布式事务、分布式锁等。有的时候，我们需要保证一个方法在同一时间内只能被同一个线程执行。<br>
+在这里我们使用Consul来管理分布式锁。Consul内置了服务注册与发现框 架、分布一致性协议实现、健康检查、Key/Value存储、多数据中心方案，不再需要依赖其他工具（比如<a href="http://tonybai.com/tag/zookeeper">ZooKeeper</a>等）。</p>
+<h3 id="sessions">Sessions</h3>
+<p><a href="https://o6rr5e4by.qnssl.com/wp-content/uploads/2017/01/consul-sessions-56bc7006.png"></a><br>
+session是一个远程进程和consul节点之间的链接，它由一个远程进程和可以显式无效或由于健康检查机制。根据会话配置，创建与已失效会话锁摧毁或释放。</p>
+<h4 id="health-checks">Health checks</h4>
+<p>Consul支持多种检查 （如 HTTP、 TCP 等）。在session创建过程中可以定义的健康检查列表。这些检查将用于确定是否sessio需要使之失效。</p>
+<h4 id="ttl">TTL</h4>
+<p>除了健康检查，会话也具有内置支持的 TTL。当 TTL 过期session被视为无效。远程进程负责更新session之前 TTL 过期。</p>
+<h3 id="golang-api">Golang API</h3>
+<p><a href="https://godoc.org/github.com/hashicorp/consul/api">Consul API client</a> 提供一个方便的抽象，session和 K/V 存储。有是一个锁结构与锁定、 解锁和破坏的方法。也有用于帮助创建锁实例方法。API 客户端还负责更新会话。</p>
+<h4 id="creating-the-consul-client">Creating the Consul client</h4>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span>client, err <span style="color:#000;font-weight:bold">:=</span> api.<span style="color:#900;font-weight:bold">NewClient</span>(<span style="color:#000;font-weight:bold">&amp;</span>api.Config{Address: <span style="color:#d14">&#34;127.0.0.1:8500&#34;</span>})
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="creating-lock-instance">Creating Lock instance</h4>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">type</span> LockOptions <span style="color:#000;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>    Key <span style="color:#458;font-weight:bold">string</span> <span style="color:#998;font-style:italic">// Must be set and have write permissions
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    Value []<span style="color:#458;font-weight:bold">byte</span> <span style="color:#998;font-style:italic">// Optional, value to associate with the lock
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    Session <span style="color:#458;font-weight:bold">string</span> <span style="color:#998;font-style:italic">// Optional, created if not specified
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    SessionOpts <span style="color:#000;font-weight:bold">*</span>SessionEntry <span style="color:#998;font-style:italic">// Optional, options to use when creating a session
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    SessionName <span style="color:#458;font-weight:bold">string</span> <span style="color:#998;font-style:italic">// Optional, defaults to DefaultLockSessionName (ignored if SessionOpts is given)
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    SessionTTL <span style="color:#458;font-weight:bold">string</span> <span style="color:#998;font-style:italic">// Optional, defaults to DefaultLockSessionTTL (ignored if SessionOpts is given)
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    MonitorRetries <span style="color:#458;font-weight:bold">int</span> <span style="color:#998;font-style:italic">// Optional, defaults to 0 which means no retries
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    MonitorRetryTime time.Duration <span style="color:#998;font-style:italic">// Optional, defaults to DefaultMonitorRetryTime
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    LockWaitTime time.Duration <span style="color:#998;font-style:italic">// Optional, defaults to DefaultLockWaitTime
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>    LockTryOnce <span style="color:#458;font-weight:bold">bool</span> <span style="color:#998;font-style:italic">// Optional, defaults to false which means try forever
+</span></span></span><span style="display:flex;"><span><span style="color:#998;font-style:italic"></span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>LockOptions 是所有可能的选项的容器，可以用于设置键和值、 定制会话或设置TTL。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span>opts <span style="color:#000;font-weight:bold">:=</span> <span style="color:#000;font-weight:bold">&amp;</span>api.LockOptions{
+</span></span><span style="display:flex;"><span>    Key: <span style="color:#d14">&#34;webhook_receiver/1&#34;</span>,
+</span></span><span style="display:flex;"><span>    Value: []<span style="color:#0086b3">byte</span>(<span style="color:#d14">&#34;set by sender 1&#34;</span>),
+</span></span><span style="display:flex;"><span>    SessionTTL: <span style="color:#d14">&#34;10s&#34;</span>,
+</span></span><span style="display:flex;"><span>    SessionOpts: <span style="color:#000;font-weight:bold">&amp;</span>api.SessionEntry{
+</span></span><span style="display:flex;"><span>    Checks: []<span style="color:#458;font-weight:bold">string</span>{<span style="color:#d14">&#34;check1&#34;</span>, <span style="color:#d14">&#34;check2&#34;</span>},
+</span></span><span style="display:flex;"><span>    Behavior: <span style="color:#d14">&#34;release&#34;</span>,
+</span></span><span style="display:flex;"><span>},
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>lock, err <span style="color:#000;font-weight:bold">:=</span> client.<span style="color:#900;font-weight:bold">LockOpts</span>(opts)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>另一种常用的方法是 LockKey，它创建一个锁与所有选项设置为默认条目名称除外。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span>    lock, err <span style="color:#000;font-weight:bold">:=</span> client.<span style="color:#900;font-weight:bold">LockKey</span>(<span style="color:#d14">&#34;webhook_receiver/1&#34;</span>)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="acquiring-lock">Acquiring lock</h4>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span>stopCh <span style="color:#000;font-weight:bold">:=</span> <span style="color:#0086b3">make</span>(<span style="color:#000;font-weight:bold">chan</span> <span style="color:#000;font-weight:bold">struct</span>{})
+</span></span><span style="display:flex;"><span>lockCh, err <span style="color:#000;font-weight:bold">:=</span> lock.<span style="color:#900;font-weight:bold">Lock</span>(stopCh)
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">if</span> err <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#0086b3">panic</span>(err)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>cancelCtx, cancelRequest <span style="color:#000;font-weight:bold">:=</span> context.<span style="color:#900;font-weight:bold">WithCancel</span>(context.<span style="color:#900;font-weight:bold">Background</span>())
+</span></span><span style="display:flex;"><span>req, _ <span style="color:#000;font-weight:bold">:=</span> http.<span style="color:#900;font-weight:bold">NewRequest</span>(<span style="color:#d14">&#34;GET&#34;</span>, <span style="color:#d14">&#34;https://example.com/webhook&#34;</span>, <span style="color:#000;font-weight:bold">nil</span>)
+</span></span><span style="display:flex;"><span>req = req.<span style="color:#900;font-weight:bold">WithContext</span>(cancelCtx)
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">go</span> <span style="color:#000;font-weight:bold">func</span>() {
+</span></span><span style="display:flex;"><span>http.DefaultClient.<span style="color:#900;font-weight:bold">Do</span>(req)
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">select</span> {
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">case</span> <span style="color:#000;font-weight:bold">&lt;-</span>cancelCtx.<span style="color:#900;font-weight:bold">Done</span>():
+</span></span><span style="display:flex;"><span>log.<span style="color:#900;font-weight:bold">Println</span>(<span style="color:#d14">&#34;request cancelled&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">default</span>:
+</span></span><span style="display:flex;"><span>log.<span style="color:#900;font-weight:bold">Println</span>(<span style="color:#d14">&#34;request done&#34;</span>)
+</span></span><span style="display:flex;"><span>err = lock.<span style="color:#900;font-weight:bold">Unlock</span>()
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">if</span> err <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>log.<span style="color:#900;font-weight:bold">Println</span>(<span style="color:#d14">&#34;lock already unlocked&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>}()
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">go</span> <span style="color:#000;font-weight:bold">func</span>() {
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">&lt;-</span>lockCh
+</span></span><span style="display:flex;"><span><span style="color:#900;font-weight:bold">cancelRequest</span>()
+</span></span><span style="display:flex;"><span>}()
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="https://blog.hxzhouh.com">hxzhouh</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="https://blog.hxzhouh.com/post/Golang-%E9%80%9A%E8%BF%87-Consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">https://blog.hxzhouh.com/post/Golang-%E9%80%9A%E8%BF%87-Consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/go-trace-view-trace-%E6%98%BE%E7%A4%BA%E7%A9%BA%E7%99%BD/">go trace view trace 显示空白</a></li>
+        
+        <li><a href="/post/new%E8%B7%9Fmake-%E7%9A%84%E5%8C%BA%E5%88%AB/">new跟make 的区别</a></li>
+        
+        <li><a href="/post/leetcode%E8%A7%A3%E9%A2%98%E7%AC%94%E8%AE%B0-114-%E5%8E%9F%E5%9C%B0%E7%AE%97%E6%B3%95/">leetcode解题笔记-114-原地算法</a></li>
+        
+        <li><a href="/about/">关于我</a></li>
+        
+        <li><a href="/archives/">归档</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/Go' target="_blank">Go</a></li>
+                
+                <li><a href='/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5' target="_blank">最佳实践</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "hxzhouh/blogcomment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2023 <a href="https://blog.hxzhouh.com">萝卜的博客 By hxzhouh</a>
+        
+    </div>
+    <br />
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+    <script src='/js/douban.js'></script>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='https://blog.hxzhouh.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://blog.hxzhouh.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E5%9C%A8VPS%E4%B8%8A%E6%90%AD%E5%BB%BAvaultwarden/" title="在VPS上搭建vaultwarden" target="_blank">在VPS上搭建vaultwarden</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Linux-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/" title="Linux 远程服务器免密登录" target="_blank">Linux 远程服务器免密登录</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-PProf/" title="Golang 大杀器之性能剖析 PProf" target="_blank">Golang 大杀器之性能剖析 PProf</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/" title="深度优先算法与广度优先算法" target="_blank">深度优先算法与广度优先算法</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8ARedis-%E9%93%BE%E8%A1%A8/" title="聊聊Redis  链表" target="_blank">聊聊Redis  链表</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/" title="聊聊redis sds" target="_blank">聊聊redis sds</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/newsletter-202212/" title="Newsletter 202212" target="_blank">Newsletter 202212</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/" title="Go - Ordering in Select Statements" target="_blank">Go - Ordering in Select Statements</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/" title="go 怎么做stw" target="_blank">go 怎么做stw</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Golang-%E9%80%9A%E8%BF%87-Consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" title="Golang 通过 Consul 实现分布式锁" target="_blank">Golang 通过 Consul 实现分布式锁</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://blog.hxzhouh.com/categories/Go/">Go (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/blog/">blog (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/Go/">Go (5)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/leetCode/">leetCode (2)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/newsletter/">newsletter (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/redis/">redis (2)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/%E6%8A%80%E6%9C%AF/">技术 (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/">数据结构&amp;算法 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://blog.hxzhouh.com/tags/BFS/">BFS</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/DFS/">DFS</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go/">go</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/docker/">docker</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go/">go</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go-%E5%BA%95%E5%B1%82/">go 底层</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/leetCode/">leetCode</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/linux/">linux</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/pprof/">pprof</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/redis/">redis</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/">反向代理</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E5%AF%86%E7%A0%81%E6%89%98%E7%AE%A1/">密码托管</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">最佳实践</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://www.flysnow.org/" title="飞雪无情的博客">飞雪无情的博客</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="https://blog.hxzhouh.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

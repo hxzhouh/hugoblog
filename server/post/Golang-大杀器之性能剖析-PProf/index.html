@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Golang 大杀器之性能剖析 PProf | 萝卜的博客</title>
+    <meta property="og:title" content="Golang 大杀器之性能剖析 PProf - 萝卜的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2022-09-30T15:14:57&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2023-09-22T14:46:20&#43;08:00'>
+        
+    <meta name="Keywords" content="golang,go语言,go语言笔记,性能优化">
+    <meta name="description" content="Golang 大杀器之性能剖析 PProf">
+        
+    <meta name="author" content="hxzhouh">
+    <meta property="og:url" content="https://blog.hxzhouh.com/post/Golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-PProf/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/douban.css'>
+    
+        <link rel="stylesheet" href='/css/other.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://blog.hxzhouh.com">
+                        萝卜的博客
+                    </a>
+                
+                <p class="description">专注于后端开发,性能优化以及个人成长</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://blog.hxzhouh.com">Home</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/archives/arts" title="arts">arts</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://blog.hxzhouh.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">Golang 大杀器之性能剖析 PProf</h1>
+        </header>
+        
+  <time datetime="2022-09-30T07:14:57Z" class="post-meta meta-date dt-published">
+    2022-09-30
+  </time>
+
+
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/go' target="_blank">go</a>
+  
+</div>
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="post-content">
+            <h1 id="golang-大杀器之性能剖析-pprof">Golang 大杀器之性能剖析 PProf</h1>
+<h2 id="前言">前言</h2>
+<p>写了几吨代码，实现了几百个接口。功能测试也通过了，终于成功的部署上线了</p>
+<p>结果，性能不佳，什么鬼？😭</p>
+<h2 id="想做性能分析">想做性能分析</h2>
+<h3 id="pprof">PProf</h3>
+<p>想要进行性能优化，首先瞩目在 Go 自身提供的工具链来作为分析依据，本文将带你学习、使用 Go 后花园，涉及如下：</p>
+<ul>
+<li>runtime/pprof：采集程序（非 Server）的运行数据进行分析</li>
+<li>net/http/pprof：采集 HTTP Server 的运行时数据进行分析</li>
+</ul>
+<h3 id="是什么">是什么</h3>
+<p>pprof 是用于可视化和分析性能分析数据的工具</p>
+<p>pprof 以 <a href="https://github.com/google/pprof/blob/master/proto/profile.proto">profile.proto</a> 读取分析样本的集合，并生成报告以可视化并帮助分析数据（支持文本和图形报告）</p>
+<p>profile.proto 是一个 Protocol Buffer v3 的描述文件，它描述了一组 callstack 和 symbolization 信息， 作用是表示统计分析的一组采样的调用栈，是很常见的 stacktrace 配置文件格式</p>
+<h3 id="支持什么使用模式">支持什么使用模式</h3>
+<ul>
+<li>Report generation：报告生成</li>
+<li>Interactive terminal use：交互式终端使用</li>
+<li>Web interface：Web 界面</li>
+</ul>
+<h3 id="可以做什么">可以做什么</h3>
+<ul>
+<li>CPU Profiling：CPU 分析，按照一定的频率采集所监听的应用程序 CPU（含寄存器）的使用情况，可确定应用程序在主动消耗 CPU 周期时花费时间的位置</li>
+<li>Memory Profiling：内存分析，在应用程序进行堆分配时记录堆栈跟踪，用于监视当前和历史内存使用情况，以及检查内存泄漏</li>
+<li>Block Profiling：阻塞分析，记录 goroutine 阻塞等待同步（包括定时器通道）的位置</li>
+<li>Mutex Profiling：互斥锁分析，报告互斥锁的竞争情况</li>
+</ul>
+<h2 id="一个简单的例子">一个简单的例子</h2>
+<p>我们将编写一个简单且有点问题的例子，用于基本的程序初步分析</p>
+<h3 id="编写-demo-文件">编写 demo 文件</h3>
+<p>（1）demo.go，文件内容：</p>
+<pre tabindex="0"><code>package main
+
+import (
+    &#34;log&#34;
+    &#34;net/http&#34;
+    _ &#34;net/http/pprof&#34;
+    &#34;github.com/EDDYCJY/go-pprof-example/data&#34;
+)
+
+func main() {
+    go func() {
+        for {
+            log.Println(data.Add(&#34;https://github.com/EDDYCJY&#34;))
+        }
+    }()
+
+    http.ListenAndServe(&#34;0.0.0.0:6060&#34;, nil)
+}
+</code></pre><p>（2）data/d.go，文件内容：</p>
+<pre tabindex="0"><code>package data
+
+var datas []string
+
+func Add(str string) string {
+    data := []byte(str)
+    sData := string(data)
+    datas = append(datas, sData)
+
+    return sData
+}
+</code></pre><p>运行这个文件，你的 HTTP 服务会多出 /debug/pprof 的 endpoint 可用于观察应用程序的情况</p>
+<h3 id="分析">分析</h3>
+<h4 id="一通过-web-界面">一、通过 Web 界面</h4>
+<p>查看当前总览：访问 <code>http://127.0.0.1:6060/debug/pprof/</code></p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">/</span>debug<span style="color:#000;font-weight:bold">/</span>pprof<span style="color:#000;font-weight:bold">/</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>profiles:
+</span></span><span style="display:flex;"><span><span style="color:#099">0</span>    block
+</span></span><span style="display:flex;"><span><span style="color:#099">5</span>    goroutine
+</span></span><span style="display:flex;"><span><span style="color:#099">3</span>    heap
+</span></span><span style="display:flex;"><span><span style="color:#099">0</span>    mutex
+</span></span><span style="display:flex;"><span><span style="color:#099">9</span>    threadcreate
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>full goroutine stack dump
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个页面中有许多子页面，咱们继续深究下去，看看可以得到什么？</p>
+<ul>
+<li>cpu（CPU Profiling）: <code>$HOST/debug/pprof/profile</code>，默认进行 30s 的 CPU Profiling，得到一个分析用的 profile 文件</li>
+<li>block（Block Profiling）：<code>$HOST/debug/pprof/block</code>，查看导致阻塞同步的堆栈跟踪</li>
+<li>goroutine：<code>$HOST/debug/pprof/goroutine</code>，查看当前所有运行的 goroutines 堆栈跟踪</li>
+<li>heap（Memory Profiling）: <code>$HOST/debug/pprof/heap</code>，查看活动对象的内存分配情况</li>
+<li>mutex（Mutex Profiling）：<code>$HOST/debug/pprof/mutex</code>，查看导致互斥锁的竞争持有者的堆栈跟踪</li>
+<li>threadcreate：<code>$HOST/debug/pprof/threadcreate</code>，查看创建新OS线程的堆栈跟踪</li>
+</ul>
+<h4 id="二通过交互式终端使用">二、通过交互式终端使用</h4>
+<p>（1）go tool pprof <a href="http://localhost/">http://localhost</a>:6060/debug/pprof/profile?seconds=60</p>
+<pre tabindex="0"><code>$ go tool pprof http://localhost:6060/debug/pprof/profile\?seconds\=60
+
+Fetching profile over HTTP from http://localhost:6060/debug/pprof/profile?seconds=60
+Saved profile in /Users/eddycjy/pprof/pprof.samples.cpu.007.pb.gz
+Type: cpu
+Duration: 1mins, Total samples = 26.55s (44.15%)
+Entering interactive mode (type &#34;help&#34; for commands, &#34;o&#34; for options)
+(pprof) 
+</code></pre><p>执行该命令后，需等待 60 秒（可调整 seconds 的值），pprof 会进行 CPU Profiling。结束后将默认进入 pprof 的交互式命令模式，可以对分析的结果进行查看或导出。具体可执行 <code>pprof help</code> 查看命令说明</p>
+<pre tabindex="0"><code>(pprof) top10
+Showing nodes accounting for 25.92s, 97.63% of 26.55s total
+Dropped 85 nodes (cum &lt;= 0.13s)
+Showing top 10 nodes out of 21
+      flat  flat%   sum%        cum   cum%
+    23.28s 87.68% 87.68%     23.29s 87.72%  syscall.Syscall
+     0.77s  2.90% 90.58%      0.77s  2.90%  runtime.memmove
+     0.58s  2.18% 92.77%      0.58s  2.18%  runtime.freedefer
+     0.53s  2.00% 94.76%      1.42s  5.35%  runtime.scanobject
+     0.36s  1.36% 96.12%      0.39s  1.47%  runtime.heapBitsForObject
+     0.35s  1.32% 97.44%      0.45s  1.69%  runtime.greyobject
+     0.02s 0.075% 97.51%     24.96s 94.01%  main.main.func1
+     0.01s 0.038% 97.55%     23.91s 90.06%  os.(*File).Write
+     0.01s 0.038% 97.59%      0.19s  0.72%  runtime.mallocgc
+     0.01s 0.038% 97.63%     23.30s 87.76%  syscall.Write
+</code></pre><ul>
+<li>flat：给定函数上运行耗时</li>
+<li>flat%：同上的 CPU 运行耗时总比例</li>
+<li>sum%：给定函数累积使用 CPU 总比例</li>
+<li>cum：当前函数加上它之上的调用运行总耗时</li>
+<li>cum%：同上的 CPU 运行耗时总比例</li>
+</ul>
+<p>最后一列为函数名称，在大多数的情况下，我们可以通过这五列得出一个应用程序的运行情况，加以优化 🤔</p>
+<p>（2）go tool pprof <a href="http://localhost/">http://localhost</a>:6060/debug/pprof/heap</p>
+<pre tabindex="0"><code>$ go tool pprof http://localhost:6060/debug/pprof/heap
+Fetching profile over HTTP from http://localhost:6060/debug/pprof/heap
+Saved profile in /Users/eddycjy/pprof/pprof.alloc_objects.alloc_space.inuse_objects.inuse_space.008.pb.gz
+Type: inuse_space
+Entering interactive mode (type &#34;help&#34; for commands, &#34;o&#34; for options)
+(pprof) top
+Showing nodes accounting for 837.48MB, 100% of 837.48MB total
+      flat  flat%   sum%        cum   cum%
+  837.48MB   100%   100%   837.48MB   100%  main.main.func1
+</code></pre><ul>
+<li>-inuse_space：分析应用程序的常驻内存占用情况</li>
+<li>-alloc_objects：分析应用程序的内存临时分配情况</li>
+</ul>
+<p>（3） go tool pprof <a href="http://localhost/">http://localhost</a>:6060/debug/pprof/block</p>
+<p>（4） go tool pprof <a href="http://localhost/">http://localhost</a>:6060/debug/pprof/mutex</p>
+<h4 id="三pprof-可视化界面">三、PProf 可视化界面</h4>
+<p>这是令人期待的一小节。在这之前，我们需要简单的编写好测试用例来跑一下</p>
+<h5 id="编写测试用例">编写测试用例</h5>
+<p>（1）新建 data/d_test.go，文件内容：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000;font-weight:bold">package</span> data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">import</span> <span style="color:#d14">&#34;testing&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">const</span> url = <span style="color:#d14">&#34;https://github.com/EDDYCJY&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">func</span> <span style="color:#900;font-weight:bold">TestAdd</span>(t <span style="color:#000;font-weight:bold">*</span>testing.T) {
+</span></span><span style="display:flex;"><span>    s <span style="color:#000;font-weight:bold">:=</span> <span style="color:#900;font-weight:bold">Add</span>(url)
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">if</span> s <span style="color:#000;font-weight:bold">==</span> <span style="color:#d14">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>        t.<span style="color:#900;font-weight:bold">Errorf</span>(<span style="color:#d14">&#34;Test.Add error!&#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000;font-weight:bold">func</span> <span style="color:#900;font-weight:bold">BenchmarkAdd</span>(b <span style="color:#000;font-weight:bold">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    <span style="color:#000;font-weight:bold">for</span> i <span style="color:#000;font-weight:bold">:=</span> <span style="color:#099">0</span>; i &lt; b.N; i<span style="color:#000;font-weight:bold">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#900;font-weight:bold">Add</span>(url)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>（2）执行测试用例</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ go <span style="color:#0086b3">test</span> -bench<span style="color:#000;font-weight:bold">=</span>. -cpuprofile<span style="color:#000;font-weight:bold">=</span>cpu.prof
+</span></span><span style="display:flex;"><span>pkg: github.com/EDDYCJY/go-pprof-example/data
+</span></span><span style="display:flex;"><span>BenchmarkAdd-4       <span style="color:#099">10000000</span>           <span style="color:#099">187</span> ns/op
+</span></span><span style="display:flex;"><span>PASS
+</span></span><span style="display:flex;"><span>ok      github.com/EDDYCJY/go-pprof-example/data    2.300s
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>-memprofile 也可以了解一下</p>
+<h5 id="启动-pprof-可视化界面">启动 PProf 可视化界面</h5>
+<h6 id="方法一">方法一：</h6>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ go tool pprof -http<span style="color:#000;font-weight:bold">=</span>:8080 cpu.prof
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h6 id="方法二">方法二：</h6>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ go tool pprof cpu.prof 
+</span></span><span style="display:flex;"><span>$ <span style="color:#000;font-weight:bold">(</span>pprof<span style="color:#000;font-weight:bold">)</span> web
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果出现 <code>Could not execute dot; may need to install graphviz.</code>，就是提示你要安装 <code>graphviz</code> 了 （请右拐谷歌）</p>
+<h5 id="查看-pprof-可视化界面">查看 PProf 可视化界面</h5>
+<p>（1）Top</p>
+<!-- raw HTML omitted -->
+<p>（2）Graph</p>
+<p>
+        <img class="mx-auto" alt="" src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200316152620.png" />   
+    </p>
+<p>框越大，线越粗代表它占用的时间越大哦</p>
+<p>（3）Peek</p>
+<p>
+        <img class="mx-auto" alt="" src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200316152723.png" />   
+    </p>
+<p>（4）Source</p>
+<p>
+        <img class="mx-auto" alt="" src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200316152530.png" />   
+    </p>
+<p>通过 PProf 的可视化界面，我们能够更方便、更直观的看到 Go 应用程序的调用链、使用情况等，并且在 View 菜单栏中，还支持如上多种方式的切换</p>
+<p>你想想，在烦恼不知道什么问题的时候，能用这些辅助工具来检测问题，是不是瞬间效率翻倍了呢 👌</p>
+<h4 id="四pprof-火焰图">四、PProf 火焰图</h4>
+<p>另一种可视化数据的方法是火焰图，需手动安装原生 PProf 工具：</p>
+<p>（1） 安装 PProf</p>
+<pre tabindex="0"><code>$ go get -u github.com/google/pprof
+</code></pre><p>（2） 启动 PProf 可视化界面:</p>
+<pre tabindex="0"><code>$ pprof -http=:8080 cpu.prof
+</code></pre><p>（3） 查看 PProf 可视化界面</p>
+<p>打开 PProf 的可视化界面时，你会明显发现比官方工具链的 PProf 精致一些，并且多了 Flame Graph（火焰图）</p>
+<p>它就是本次的目标之一，它的最大优点是动态的。调用顺序由上到下（A -&gt; B -&gt; C -&gt; D），每一块代表一个函数，越大代表占用 CPU 的时间更长。同时它也支持点击块深入进行分析！</p>
+<p>
+        <img class="mx-auto" alt="" src="https://blog-image-1253555052.cos.ap-guangzhou.myqcloud.com/20200316152823.png" />   
+    </p>
+<h2 id="总结">总结</h2>
+<p>在本章节，粗略地介绍了 Go 的性能利器 PProf。在特定的场景中，PProf 给定位、剖析问题带了极大的帮助</p>
+<p>希望本文对你有所帮助，另外建议能够自己实际操作一遍，最好是可以深入琢磨一下，内含大量的用法、知识点</p>
+<h2 id="思考题">思考题</h2>
+<p>你很优秀的看到了最后，那么有两道简单的思考题，希望拓展你的思路</p>
+<p>（1）flat 一定大于 cum 吗，为什么？什么场景下 cum 会比 flat 大？</p>
+<p>（2）本章节的 demo 代码，有什么性能问题？怎么解决它？</p>
+<p>来，晒出你的想法</p>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="https://blog.hxzhouh.com">hxzhouh</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="https://blog.hxzhouh.com/post/Golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-PProf/">https://blog.hxzhouh.com/post/Golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-PProf/</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/Golang-%E9%80%9A%E8%BF%87-Consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">Golang 通过 Consul 实现分布式锁</a></li>
+        
+        <li><a href="/post/go-trace-view-trace-%E6%98%BE%E7%A4%BA%E7%A9%BA%E7%99%BD/">go trace view trace 显示空白</a></li>
+        
+        <li><a href="/post/new%E8%B7%9Fmake-%E7%9A%84%E5%8C%BA%E5%88%AB/">new跟make 的区别</a></li>
+        
+        <li><a href="/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/">深度优先算法与广度优先算法</a></li>
+        
+        <li><a href="/post/%E8%81%8A%E8%81%8ARedis-%E9%93%BE%E8%A1%A8/">聊聊Redis  链表</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/Go' target="_blank">Go</a></li>
+                
+                <li><a href='/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5' target="_blank">最佳实践</a></li>
+                
+                <li><a href='/tags/pprof' target="_blank">pprof</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "hxzhouh/blogcomment"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2023 <a href="https://blog.hxzhouh.com">萝卜的博客 By hxzhouh</a>
+        
+    </div>
+    <br />
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">飞雪无情</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+    <script src='/js/douban.js'></script>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='https://blog.hxzhouh.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://blog.hxzhouh.com">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E5%9C%A8VPS%E4%B8%8A%E6%90%AD%E5%BB%BAvaultwarden/" title="在VPS上搭建vaultwarden" target="_blank">在VPS上搭建vaultwarden</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Linux-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95/" title="Linux 远程服务器免密登录" target="_blank">Linux 远程服务器免密登录</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Golang-%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90-PProf/" title="Golang 大杀器之性能剖析 PProf" target="_blank">Golang 大杀器之性能剖析 PProf</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E7%AE%97%E6%B3%95/" title="深度优先算法与广度优先算法" target="_blank">深度优先算法与广度优先算法</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8ARedis-%E9%93%BE%E8%A1%A8/" title="聊聊Redis  链表" target="_blank">聊聊Redis  链表</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/%E8%81%8A%E8%81%8Aredis-sds/" title="聊聊redis sds" target="_blank">聊聊redis sds</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/newsletter-202212/" title="Newsletter 202212" target="_blank">Newsletter 202212</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/" title="Go - Ordering in Select Statements" target="_blank">Go - Ordering in Select Statements</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/" title="go 怎么做stw" target="_blank">go 怎么做stw</a>
+    </li>
+    
+    <li>
+        <a href="https://blog.hxzhouh.com/post/Golang-%E9%80%9A%E8%BF%87-Consul-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" title="Golang 通过 Consul 实现分布式锁" target="_blank">Golang 通过 Consul 实现分布式锁</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://blog.hxzhouh.com/categories/Go/">Go (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/blog/">blog (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/Go/">Go (5)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/leetCode/">leetCode (2)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/newsletter/">newsletter (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/redis/">redis (2)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/%E6%8A%80%E6%9C%AF/">技术 (1)</a></li>
+    
+    <li><a href="https://blog.hxzhouh.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/">数据结构&amp;算法 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://blog.hxzhouh.com/tags/BFS/">BFS</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/DFS/">DFS</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go/">go</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/docker/">docker</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go/">go</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/go-%E5%BA%95%E5%B1%82/">go 底层</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/leetCode/">leetCode</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/linux/">linux</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/pprof/">pprof</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/redis/">redis</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/">反向代理</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E5%AF%86%E7%A0%81%E6%89%98%E7%AE%A1/">密码托管</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">最佳实践</a>
+    
+    <a href="https://blog.hxzhouh.com/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://www.flysnow.org/" title="飞雪无情的博客">飞雪无情的博客</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="https://blog.hxzhouh.com/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

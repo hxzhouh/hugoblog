@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>go on 萝卜的博客</title>
+    <link>https://blog.hxzhouh.com/tags/go/</link>
+    <description>Recent content in go on 萝卜的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 30 Sep 2022 15:14:57 +0800</lastBuildDate><atom:link href="https://blog.hxzhouh.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go - Ordering in Select Statements</title>
+      <link>https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/</link>
+      <pubDate>Wed, 29 Apr 2020 22:50:50 +0000</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/Go-Ordering-in-Select-Statements/</guid>
+      <description>原文链接 Vincent Blanchon 本文基于 go 1.14 select 允许在一个goroutine中管理多个channel。但是，当所有channel同时就绪的时候，go需要在其中选择一个执行。go还需要处理没有channel就绪的情况，我们先从就绪的channel开始。 Order select 不会按照任何规则或者优先级选择到达的channe</description>
+    </item>
+    
+    <item>
+      <title>go 怎么做stw</title>
+      <link>https://blog.hxzhouh.com/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/</link>
+      <pubDate>Tue, 28 Apr 2020 21:19:00 +0000</pubDate>
+      
+      <guid>https://blog.hxzhouh.com/post/go-%E6%80%8E%E6%A0%B7%E5%81%9A-stw/</guid>
+      <description>原文链接: Go: How Does Go Stop the World? : Author : Vincent Blanchon 本文基于 go 1.13 在垃圾回收算法中，Stop The Word（STW）是一个很重要的概念，他会中断程序运行，添加写屏障，以便扫描内存 ,现在一起来看看它内部的原理以及可能存在的问题 STW 停止程序运行意味着停止所有运行态的goroutines,一个简单的例子: 1 2 3</description>
+    </item>
+    
+  </channel>
+</rss>
