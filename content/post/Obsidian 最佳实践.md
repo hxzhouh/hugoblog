@@ -10,5 +10,5 @@ categories:
 # Obsidian 最佳实践
 #obsidian
 
-
+我用Obsidian 来做什么
 https://github.com/Kenshin/simpread/discussions/3807

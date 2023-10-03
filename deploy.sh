@@ -28,4 +28,3 @@ git commit -m "$msg"
 git push origin 
 
 mv  content/post/ARTS*.md content/post/arts/
-
