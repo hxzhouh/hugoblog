@@ -27,5 +27,5 @@ git commit -m "$msg"
 # 推送到github
 git push origin 
 
-mv  -f content/post/ARTS*.md content/post/arts/
+mv  content/post/ARTS*.md content/post/arts/
 
