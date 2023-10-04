@@ -13,6 +13,8 @@ categories:
 # 我用Obsidian 来做什么？
 
 ## 写博客 
+我的[blog](https://blog.hxzhouh.com/) 是用Hugo 编译， 托管在Cloudflare 上面的，具体托管教程请参考：[Deploy a Hugo site](https://developers.cloudflare.com/pages/framework-guides/deploy-a-hugo-site/) obsidian再中间的作用就是 管理文章了。我用软链接将 hugo 目录里面的content 连接到 obsidian 的目录，然后配合 插件 QuickAdd & Template 插件，很方便的就添加一个新的博客。  
+写完博客后，用Raycast 触发一下push（脚本），这样就搞定了。。
 
 ## 使用简悦记录网络内容
 
