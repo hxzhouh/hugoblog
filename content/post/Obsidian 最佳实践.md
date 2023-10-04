@@ -10,5 +10,12 @@ categories:
 # Obsidian 最佳实践
 #obsidian
 
-我用Obsidian 来做什么
+# 我用Obsidian 来做什么？
+
+## 写博客 
+
+## 使用简悦记录网络内容
+
+## 本地日记本。
+
 https://github.com/Kenshin/simpread/discussions/3807
