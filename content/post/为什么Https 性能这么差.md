@@ -14,3 +14,10 @@ HTTP 协议（Hypertext Transfer Protocol）已经成为互联网上最常用的
 HTTPS 是对 HTTP 协议的扩展，我们可以使用它在互联网上安全地传输数据，然而 HTTPS 请求的发起方第一次从接收方获取响应需要经过 4.5 倍的往返延迟（Round-Trip Time，RTT）以及7次握手，这就是Https 协议性能差的原因。
 <!-- more -->
 
+
+
+
+# 参考资料  
+
+为什么Http3 越来越流行了？  
+https://blog.apnic.net/2023/09/25/why-http-3-is-eating-the-world/
