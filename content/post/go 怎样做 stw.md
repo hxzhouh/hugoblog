@@ -1,10 +1,12 @@
 ---
 title: go 怎么做stw
-tags: ["go"]
+tags:
+  - go
 date: 2020-04-28 21:19:00
-categories: ["go"]
- 
+categories:
+  - go
 createAt: 2022-09-30 15:14:57
+draft:
 ---
 
 >原文链接:  [Go: How Does Go Stop the World? ](https://medium.com/a-journey-with-go/go-how-does-go-stop-the-world-1ffab8bc8846):  

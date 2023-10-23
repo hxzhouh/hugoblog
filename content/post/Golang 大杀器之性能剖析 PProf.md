@@ -1,10 +1,15 @@
 ---
 title: Golang 大杀器之性能剖析 PProf
 date: 2022-09-30T15:14:57+08:00
-categories: ["go"]
-tags: ["Go","最佳实践","pprof"]
+categories:
+  - go
+tags:
+  - Go
+  - 最佳实践
+  - pprof
 lastmod: 2023-09-22T14:46:20+08:00
 createAt: 2022-09-30 15:14:57
+draft:
 ---
 # Golang 大杀器之性能剖析 PProf
 

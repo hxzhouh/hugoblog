@@ -1,9 +1,13 @@
 ---
-title: "go trace view trace 显示空白"
+title: go trace view trace 显示空白
 date: 2020-03-21 11:55:43
-categories: ["go"]
-tags: ["Go","最佳实践"]
+categories:
+  - go
+tags:
+  - Go
+  - 最佳实践
 createAt: 2022-09-30 15:14:57
+draft:
 ---
 
 > go trace 用来跟踪 goroutines运行情况,跟pprof配合使用，可以起到事半功倍的效果。但是，go trace 的view trace 在chrome下一片空白。

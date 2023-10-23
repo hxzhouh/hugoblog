@@ -1,10 +1,13 @@
 ---
 title: new跟make 的区别
 date: 2020-03-21T11:55:43+08:00
-categories: ["go"]
-tags: ["Go"]
+categories:
+  - go
+tags:
+  - Go
 lastmod: 2023-09-22T14:46:21+08:00
 createAt: 2022-09-30 15:14:57
+draft:
 ---
 # new跟make 的区别
 
