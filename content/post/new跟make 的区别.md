@@ -7,7 +7,7 @@ tags:
   - Go
 lastmod: 2023-09-22T14:46:21+08:00
 createAt: 2022-09-30 15:14:57
-draft:
+draft: false
 ---
 # new跟make 的区别
 

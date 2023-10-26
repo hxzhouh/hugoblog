@@ -7,7 +7,7 @@ tags:
   - Go
   - 最佳实践
 createAt: 2022-09-30 15:14:57
-draft:
+draft: false
 ---
 
 > go trace 用来跟踪 goroutines运行情况,跟pprof配合使用，可以起到事半功倍的效果。但是，go trace 的view trace 在chrome下一片空白。
