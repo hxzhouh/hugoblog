@@ -17,7 +17,11 @@ categories:
 写完博客后，用Raycast 触发一下push（脚本），这样就搞定了。。
 
 ## 使用简悦记录网络内容
-
 ## 本地日记本。
-
 https://github.com/Kenshin/simpread/discussions/3807
+
+# 正在使用的插件 
+
+- [Natural Language Dates](https://github.com/argenos/nldates-obsidian) 方便的输入时间，具体请参考 GitHub主页，后面一些自动化功能都是基于 [Natural Language Dates](https://github.com/argenos/nldates-obsidian) 实现
+
+- 
