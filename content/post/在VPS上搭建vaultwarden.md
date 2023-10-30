@@ -12,6 +12,8 @@ title: 在VPS上搭建vaultwarden
 date: 2023-09-23T21:43:28+08:00
 lastmod: 2023-09-23T22:20:16+08:00
 createAt: 2023-09-23 21:43:28
+create_at: 2023-09-23 21:43:28
+update_at: 2023-10-30 16:03:39
 ---
 # 在VPS上搭建vaultwarden
 之前一直在寻找一个支持跨平台的密码管理工具，先后尝试了 1Password 和 LastPass，迫于贫穷，切换到了开源的 [Bitwarden](https://bitwarden.com/) 支持自托管服务端,但是 [Bitwarden](https://bitwarden.com/) 对性能要求比较高， 退而求其次，用它的另一个实现 [Vaultwarden](https://github.com/dani-garcia/vaultwarden)（原名 Bitwarden_rs） [Vaultwarden](https://github.com/dani-garcia/vaultwarden) 完美兼容[Bitwarden](https://bitwarden.com/) ，这样我们就在AWS 的免费主机上得到了一个  [Vaultwarden](https://github.com/dani-garcia/vaultwarden) 做后端，[Bitwarden](https://bitwarden.com/)做前端的 免费密码托管服务。  

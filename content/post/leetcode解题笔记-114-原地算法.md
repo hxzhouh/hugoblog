@@ -9,6 +9,8 @@ categories:
 lastmod: 2023-09-22T14:46:20+08:00
 createAt: 2022-09-30 15:14:57
 draft: false
+create_at: 2022-09-30 15:14:57
+update_at: 2023-10-30 16:03:42
 ---
 
 >In [computer science](https://en.wikipedia.org/wiki/Computer_science), an **in-place algorithm** is an [algorithm](https://en.wikipedia.org/wiki/Algorithm) which transforms input using no auxiliary [data structure](https://en.wikipedia.org/wiki/Data_structure). However a small amount of extra storage space is allowed for auxiliary variables. The input is usually overwritten by the output as the algorithm executes. In-place algorithm updates input sequence only through replacement or swapping of elements. An algorithm which is not in-place is sometimes called **not-in-place** or **out-of-place**.——摘自[原地算法](https://en.wikipedia.org/wiki/In-place_algorithm)的维基百科
