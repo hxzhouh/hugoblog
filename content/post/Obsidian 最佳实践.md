@@ -6,7 +6,7 @@ draft: true
 categories:
   - 随笔
 create_at: 2023-09-24 08:26:01
-update_at: 2023-10-27 15:03:33
+update_at: 2023-11-08 10:05:25
 ---
 # Obsidian 最佳实践
 #obsidian
@@ -20,6 +20,10 @@ update_at: 2023-10-27 15:03:33
 ## 使用简悦记录网络内容
 ## 本地日记本。
 https://github.com/Kenshin/simpread/discussions/3807
+
+# 一些小技巧
+## 特定文件夹自动使用某个模板。
+
 
 # 正在使用的插件 
 
